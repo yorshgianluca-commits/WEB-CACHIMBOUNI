@@ -2,6 +2,7 @@ import Icon from "../components/Icon";
 import ParticleField from "../components/ParticleField";
 import SiteHeader from "../components/SiteHeader";
 import SiteFooter from "../components/SiteFooter";
+import GoldResources from "../components/GoldResources";
 import { CATEGORIES, countByCategory } from "../lib/data";
 import type { NavigateFn } from "../lib/router";
 
@@ -258,6 +259,8 @@ export default function HomePage({ navigate, path }: HomePageProps) {
         </div>
       </section>
 
+      <GoldResources navigate={navigate} />
+
       <section className="home-guia section-pad">
         <div className="home-guia-inner">
           <div className="home-guia-left">
@@ -266,7 +269,7 @@ export default function HomePage({ navigate, path }: HomePageProps) {
             <h2>
               Canales y videos
               <br />
-              que <em>sí me sirvieron.</em>
+              <em>recomendados.</em>
             </h2>
             <p>
               14 canales curados de YouTube y 2 videos clave para método y mentalidad. Una guía clara

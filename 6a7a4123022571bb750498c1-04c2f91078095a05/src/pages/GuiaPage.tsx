@@ -128,7 +128,7 @@ export default function GuiaPage({ navigate, path }: GuiaPageProps) {
             <>
               Canales y videos
               <br />
-              que <em>sí me sirvieron.</em>
+              <em>recomendados.</em>
             </>
           }
         >

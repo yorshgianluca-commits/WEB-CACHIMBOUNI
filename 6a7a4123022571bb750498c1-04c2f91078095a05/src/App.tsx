@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import HomePage from "./pages/HomePage";
 import ResourcesPage from "./pages/ResourcesPage";
+import RecursosGoldPage from "./pages/RecursosGoldPage";
 import RutaUniPage from "./pages/RutaUniPage";
 import GuiaPage from "./pages/GuiaPage";
 import CaminoRapidoPage from "./pages/CaminoRapidoPage";
@@ -21,7 +22,8 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (path.startsWith("/recursos")) document.title = "Recursos · CachimboUNI";
+    if (path.startsWith("/recursos-gold")) document.title = "Recursos Gold · CachimboUNI";
+    else if (path.startsWith("/recursos")) document.title = "Recursos · CachimboUNI";
     else if (path.startsWith("/ruta-uni")) document.title = "Ruta UNI · CachimboUNI";
     else if (path.startsWith("/guia")) document.title = "Guía · Canales y Videos · CachimboUNI";
     else if (path.startsWith("/camino-rapido")) document.title = "El camino más rápido · CachimboUNI";
@@ -30,6 +32,15 @@ export default function App() {
     else if (path.startsWith("/noticias")) document.title = "Noticias · CachimboUNI";
     else document.title = "CachimboUNI | Ingreso rápido a la UNI";
   }, [path]);
+
+  if (path.startsWith("/recursos-gold")) {
+    return (
+      <>
+        <RecursosGoldPage navigate={navigate} path={path} />
+        <TikTokFloat />
+      </>
+    );
+  }
 
   if (path.startsWith("/recursos")) {
     const segment = path.split("/")[2] as CategoryId | undefined;
