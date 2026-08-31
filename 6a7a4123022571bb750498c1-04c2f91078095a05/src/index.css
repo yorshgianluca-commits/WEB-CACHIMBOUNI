@@ -2260,3 +2260,544 @@ footer a:hover, footer > div button:hover { color: var(--orange-light); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
+
+/* ============================================ HEADER · BOTÓN RECURSOS GOLD */
+.nav-links .nav-gold {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  padding: 9px 16px;
+  border: 1px solid rgba(245, 211, 107, .5);
+  border-radius: 999px;
+  background: rgba(245, 211, 107, .07);
+  color: #ffdf8a;
+  overflow: hidden;
+  transition: background .3s, border-color .3s, box-shadow .3s, color .3s;
+}
+.nav-links .nav-gold::before {
+  content: "★";
+  margin-right: 7px;
+  font-size: 10px;
+  line-height: 1;
+}
+.nav-links .nav-gold::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0; left: -70%;
+  width: 42%;
+  background: linear-gradient(105deg, transparent, rgba(255, 248, 214, .55), transparent);
+  transform: skewX(-18deg);
+  animation: goldSheen 4.4s ease-in-out infinite;
+  pointer-events: none;
+}
+.nav-links .nav-gold:hover {
+  background: rgba(245, 211, 107, .16);
+  border-color: rgba(255, 230, 150, .9);
+  color: #fff3c4;
+  box-shadow: 0 0 24px rgba(245, 211, 107, .35), inset 0 0 14px rgba(255, 235, 170, .18);
+}
+@media (max-width: 900px) {
+  .nav-links .nav-gold {
+    justify-content: center;
+    margin: 18px 0 8px;
+    padding: 14px 16px;
+    border-bottom: none !important;
+    text-align: center;
+  }
+}
+
+/* ================================================== HOME · RECURSOS GOLD */
+.gold-section {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(1000px 560px at 88% 0%, rgba(212, 160, 23, .16), transparent 62%),
+    radial-gradient(760px 460px at 4% 96%, rgba(140, 108, 12, .14), transparent 64%),
+    linear-gradient(180deg, #0b0d0c, #0a0b08 50%, #0d0e09);
+  border-top: 1px solid rgba(245, 211, 107, .16);
+  border-bottom: 1px solid rgba(245, 211, 107, .16);
+  scroll-margin-top: 90px;
+}
+.gold-grid-bg {
+  position: absolute; inset: 0; z-index: -6; opacity: .5; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(245, 211, 107, .05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245, 211, 107, .05) 1px, transparent 1px);
+  background-size: 84px 84px;
+  mask-image: radial-gradient(circle at 50% 40%, black, transparent 82%);
+}
+.gold-ghost {
+  position: absolute; z-index: -5; left: 50%; top: 4%;
+  transform: translateX(-50%);
+  font: 700 clamp(150px, 28vw, 420px)/1 "Oswald";
+  letter-spacing: -.04em; text-transform: uppercase; white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(245, 211, 107, .13);
+  pointer-events: none;
+  user-select: none;
+}
+.gold-layer { position: absolute; inset: 0; z-index: -4; pointer-events: none; }
+.gold-orb {
+  position: absolute; border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, #ffe9a8, #d4a017 55%, rgba(212, 160, 23, 0) 72%);
+  filter: blur(1px);
+  animation: goldFloat 9s ease-in-out infinite alternate;
+}
+.gold-particle {
+  position: absolute; border-radius: 50%;
+  background: #ffdf8a;
+  box-shadow: 0 0 12px rgba(255, 223, 138, .8);
+  animation: goldFloat 11s ease-in-out infinite alternate;
+}
+@keyframes goldFloat {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(26px, -46px, 0); }
+}
+
+/* HUD estilo hero-ascii-one */
+.gold-hud {
+  position: absolute; z-index: 2;
+  color: rgba(245, 211, 107, .5);
+  font: 500 10px "DM Sans";
+  letter-spacing: .24em; text-transform: uppercase;
+  pointer-events: none;
+}
+.gold-hud::before { content: "◐ "; }
+.gold-hud--tl { top: 34px; left: clamp(24px, 8vw, 130px); }
+.gold-hud--tr { top: 34px; right: clamp(24px, 8vw, 130px); }
+.gold-hud--bl { bottom: 34px; left: clamp(24px, 8vw, 130px); }
+.gold-hud--br { bottom: 34px; right: clamp(24px, 8vw, 130px); }
+
+.gold-inner { position: relative; z-index: 3; max-width: 1200px; margin: 0 auto; }
+.gold-head { max-width: 780px; }
+.gold-index { margin-bottom: 26px; color: #d4a017; letter-spacing: .3em; }
+.gold-head h2 {
+  margin: 0;
+  font: 500 clamp(52px, 8vw, 108px)/.93 "Oswald";
+  letter-spacing: -.045em; text-transform: uppercase;
+}
+.gold-word {
+  font-style: normal;
+  background: linear-gradient(100deg, #8a6d1f 0%, #f5d36b 22%, #fff6cf 38%, #d4a017 55%, #f5d36b 72%, #8a6d1f 100%);
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: goldShimmer 6s linear infinite;
+}
+@keyframes goldShimmer { to { background-position: -220% center; } }
+.gold-lead { margin: 28px 0 0; max-width: 640px; color: #a8a99f; font: 400 15px/1.75 "DM Sans"; }
+
+/* Botón líquido dorado transparente */
+.gold-liquid-btn {
+  position: relative;
+  display: inline-flex; align-items: center; gap: 14px;
+  margin-top: 42px; padding: 18px 30px;
+  border: 1px solid rgba(245, 211, 107, .55);
+  border-radius: 999px;
+  background: linear-gradient(120deg, rgba(245, 211, 107, .1), rgba(212, 160, 23, .16) 45%, rgba(255, 243, 196, .08));
+  color: #ffe9a8;
+  font: 700 11px "DM Sans"; letter-spacing: .18em; text-transform: uppercase;
+  cursor: pointer;
+  overflow: hidden;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow:
+    0 0 0 1px rgba(255, 220, 120, .07) inset,
+    0 22px 48px -20px rgba(212, 160, 23, .4);
+  transition: border-color .35s, box-shadow .35s, transform .35s;
+}
+.gold-liquid-btn::before {
+  content: "";
+  position: absolute; inset: -45%;
+  background:
+    radial-gradient(36% 42% at 28% 18%, rgba(255, 236, 170, .6), transparent 62%),
+    radial-gradient(30% 38% at 74% 66%, rgba(212, 160, 23, .55), transparent 64%),
+    radial-gradient(22% 28% at 60% 30%, rgba(255, 255, 255, .4), transparent 60%),
+    radial-gradient(26% 32% at 45% 78%, rgba(138, 109, 31, .5), transparent 62%);
+  filter: blur(7px);
+  animation: goldLiquid 8s ease-in-out infinite alternate;
+  transition: transform .5s;
+  pointer-events: none;
+}
+.gold-liquid-btn:hover::before { animation-play-state: paused; transform: scale(1.18) rotate(10deg); }
+.gold-liquid-btn:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 230, 150, .95);
+  box-shadow:
+    0 0 0 1px rgba(255, 230, 150, .14) inset,
+    0 26px 60px -18px rgba(245, 211, 107, .55);
+}
+@keyframes goldLiquid {
+  0%   { transform: translate3d(-4%, -2%, 0) rotate(0deg) scale(1); }
+  50%  { transform: translate3d(5%, 3%, 0) rotate(14deg) scale(1.08); }
+  100% { transform: translate3d(-3%, 4%, 0) rotate(-8deg) scale(1.04); }
+}
+.gold-liquid-btn-shine {
+  position: absolute; top: 0; bottom: 0; left: -70%; width: 42%; pointer-events: none;
+  background: linear-gradient(105deg, transparent, rgba(255, 248, 214, .55), transparent);
+  transform: skewX(-18deg);
+  animation: goldSheen 4.2s ease-in-out infinite;
+}
+@keyframes goldSheen { 0%, 55% { left: -70%; } 100% { left: 130%; } }
+.gold-liquid-btn-icon {
+  width: 34px; height: 34px; display: grid; place-items: center; flex-shrink: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f5d36b, #d4a017 60%, #8a6d1f);
+  color: #16120a;
+  box-shadow: 0 6px 18px -6px rgba(245, 211, 107, .65);
+}
+.gold-liquid-btn > svg { flex-shrink: 0; transition: transform .3s; }
+.gold-liquid-btn:hover > svg { transform: translateX(4px); }
+
+/* Grid de tarjetas doradas */
+.gold-grid {
+  margin-top: clamp(70px, 9vw, 110px);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+.gold-card {
+  position: relative;
+  display: flex; flex-direction: column;
+  min-height: 320px; padding: 32px;
+  border: 1px solid rgba(245, 211, 107, .22);
+  background: linear-gradient(180deg, rgba(245, 211, 107, .05), rgba(255, 255, 255, .012));
+  overflow: hidden;
+  color: var(--paper);
+  text-align: left;
+  transition: border-color .35s, transform .35s, box-shadow .35s;
+}
+.gold-card::after {
+  content: "";
+  position: absolute; left: 0; top: 0; width: 100%; height: 3px;
+  background: linear-gradient(90deg, #f5d36b, #d4a017, #fff3c4, #f5d36b);
+  background-size: 300% 100%;
+  transform: scaleX(0); transform-origin: left;
+  transition: transform .45s;
+}
+.gold-card:hover::after { transform: scaleX(1); animation: goldBar 3.2s linear infinite; }
+@keyframes goldBar { to { background-position: 300% 0; } }
+.gold-card:hover {
+  transform: translateY(-7px);
+  border-color: rgba(245, 211, 107, .6);
+  box-shadow: 0 26px 60px -24px rgba(212, 160, 23, .45);
+}
+.gold-card-glow {
+  position: absolute; inset: 0; pointer-events: none; opacity: 0;
+  background: radial-gradient(340px 200px at 50% 0%, rgba(245, 211, 107, .16), transparent 70%);
+  transition: opacity .4s;
+}
+.gold-card:hover .gold-card-glow { opacity: 1; }
+.gold-card-sheen {
+  position: absolute; top: 0; bottom: 0; left: -70%; width: 42%; pointer-events: none;
+  background: linear-gradient(105deg, transparent, rgba(255, 248, 214, .16), transparent);
+  transform: skewX(-18deg);
+}
+.gold-card:hover .gold-card-sheen { animation: goldSheen 1.6s ease-out; }
+.gold-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 34px; }
+.gold-card-index { color: rgba(245, 211, 107, .5); font: 500 10px "DM Sans"; letter-spacing: .24em; }
+.gold-card-icon {
+  width: 52px; height: 52px; display: grid; place-items: center;
+  border: 1px solid rgba(245, 211, 107, .4); border-radius: 50%;
+  color: #ffdf8a;
+  background: rgba(245, 211, 107, .06);
+  transition: .35s;
+}
+.gold-card:hover .gold-card-icon {
+  background: linear-gradient(135deg, #f5d36b, #d4a017 60%, #8a6d1f);
+  border-color: #f5d36b;
+  color: #16120a;
+  box-shadow: 0 8px 24px -8px rgba(245, 211, 107, .7);
+}
+.gold-card-badge {
+  align-self: flex-start;
+  margin-bottom: 14px; padding: 5px 10px;
+  border: 1px solid rgba(245, 211, 107, .3);
+  border-radius: 999px;
+  color: #e8c869;
+  font: 600 8.5px "DM Sans"; letter-spacing: .18em; text-transform: uppercase;
+}
+.gold-card h3 { margin: 0; font: 500 clamp(24px, 2.4vw, 32px)/1.08 "Oswald"; text-transform: uppercase; letter-spacing: -.02em; }
+.gold-card > p { margin: 14px 0 0; color: #a3a49a; font: 400 13px/1.7 "DM Sans"; }
+.gold-card-open {
+  display: flex; align-items: center; gap: 10px;
+  margin-top: auto; padding-top: 24px;
+  color: #e8c869;
+  font: 700 9.5px "DM Sans"; letter-spacing: .16em; text-transform: uppercase;
+}
+.gold-card-open svg { transition: transform .3s; }
+.gold-card:hover .gold-card-open svg { transform: translate(3px, -2px); }
+
+.gold-note {
+  display: flex; align-items: flex-start; gap: 12px;
+  margin-top: 34px; padding: 16px 20px;
+  border: 1px dashed rgba(245, 211, 107, .28);
+  color: #8f9284;
+}
+.gold-note svg { color: #d4a017; flex: 0 0 auto; margin-top: 2px; }
+.gold-note p { margin: 0; font: 400 12px/1.7 "DM Sans"; }
+
+/* Responsive RECURSOS GOLD */
+@media (max-width: 1080px) {
+  .gold-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 640px) {
+  .gold-grid { grid-template-columns: 1fr; }
+  .gold-card { min-height: 0; }
+  .gold-hud { display: none; }
+  .gold-liquid-btn { width: 100%; justify-content: center; }
+}
+
+/* ========================================== HOME · TEASER RECURSOS GOLD */
+.gold-teaser {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  padding: clamp(90px, 11vw, 150px) clamp(24px, 8vw, 130px);
+  background:
+    radial-gradient(900px 520px at 86% 8%, rgba(212, 160, 23, .17), transparent 62%),
+    radial-gradient(700px 440px at 4% 94%, rgba(140, 108, 12, .15), transparent 64%),
+    linear-gradient(180deg, #0b0d0c, #0a0b08 50%, #0d0e09);
+  border-top: 1px solid rgba(245, 211, 107, .16);
+  border-bottom: 1px solid rgba(245, 211, 107, .16);
+  scroll-margin-top: 90px;
+}
+.gold-teaser-ghost {
+  position: absolute; z-index: -5; right: -2%; top: 8%;
+  font: 700 clamp(120px, 22vw, 320px)/1 "Oswald";
+  letter-spacing: -.04em; text-transform: uppercase; white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(245, 211, 107, .12);
+  pointer-events: none; user-select: none;
+}
+.gold-teaser-inner {
+  position: relative; z-index: 3;
+  display: grid; grid-template-columns: 1.05fr .95fr; gap: 6vw; align-items: center;
+}
+.gold-teaser-copy h2 { margin: 0; font: 500 clamp(52px, 7.4vw, 96px)/.93 "Oswald"; letter-spacing: -.045em; text-transform: uppercase; }
+.gold-teaser-tags { display: flex; flex-wrap: wrap; gap: 12px; justify-content: flex-end; }
+.gold-teaser-tag {
+  display: inline-flex; align-items: center; gap: 9px;
+  padding: 12px 18px;
+  border: 1px solid rgba(245, 211, 107, .3);
+  border-radius: 999px;
+  background: rgba(245, 211, 107, .06);
+  color: #e8c869;
+  font: 600 10px "DM Sans"; letter-spacing: .14em; text-transform: uppercase;
+}
+.gold-teaser-tag svg { color: #d4a017; }
+@media (max-width: 900px) {
+  .gold-teaser-inner { grid-template-columns: 1fr; gap: 44px; }
+  .gold-teaser-tags { justify-content: flex-start; }
+}
+
+/* ================================================= PÁGINA · RECURSOS GOLD */
+.gold-page { background: var(--ink); }
+.gold-progress {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 90;
+  height: 3px; transform-origin: 0 50%;
+  background: linear-gradient(90deg, #8a6d1f, #f5d36b, #fff6cf, #d4a017);
+}
+
+/* Hero a pantalla completa con capas parallax */
+.gold-hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex; align-items: center;
+  padding: 150px clamp(24px, 8vw, 130px) 110px;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(1000px 600px at 82% 6%, rgba(212, 160, 23, .2), transparent 62%),
+    radial-gradient(800px 520px at 4% 92%, rgba(140, 108, 12, .16), transparent 66%),
+    linear-gradient(180deg, #0a0c0a, #0b0c08 55%, #0d0e09);
+}
+.gold-hero-canvas { z-index: 1; }
+.gold-hero::after {
+  content: "";
+  position: absolute; z-index: 0; inset: 0; pointer-events: none;
+  background: linear-gradient(180deg, rgba(8, 10, 8, .55), transparent 34%, transparent 62%, rgba(8, 10, 8, .85));
+}
+.gold-ghost--page {
+  top: 6%; z-index: -4;
+  font-size: clamp(190px, 34vw, 520px);
+}
+.gold-hero-inner { position: relative; z-index: 4; max-width: 860px; }
+.gold-hero-inner .breadcrumb { margin-bottom: 40px; }
+.gold-hero h1 {
+  margin: 0;
+  font: 500 clamp(54px, 8.6vw, 118px)/.93 "Oswald";
+  letter-spacing: -.045em; text-transform: uppercase;
+}
+.gold-hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 22px; margin-top: 42px; }
+.gold-ghost-btn {
+  display: inline-flex; align-items: center; gap: 12px;
+  padding: 16px 24px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .03);
+  color: rgba(255, 255, 255, .75);
+  font: 700 10px "DM Sans"; letter-spacing: .16em; text-transform: uppercase;
+  cursor: pointer;
+  transition: border-color .3s, color .3s, background .3s;
+}
+.gold-ghost-btn:hover { border-color: rgba(245, 211, 107, .6); color: #ffe9a8; background: rgba(245, 211, 107, .07); }
+.gold-cue { color: rgba(245, 211, 107, .75); }
+.gold-cue i { background: rgba(245, 211, 107, .6); }
+
+/* Marquesina infinita */
+.gold-marquee {
+  overflow: hidden;
+  padding: 22px 0;
+  border-top: 1px solid rgba(245, 211, 107, .14);
+  border-bottom: 1px solid rgba(245, 211, 107, .14);
+  background: rgba(245, 211, 107, .035);
+  user-select: none;
+}
+.gold-marquee-track { display: flex; width: max-content; animation: goldMarquee 26s linear infinite; }
+.gold-marquee:hover .gold-marquee-track { animation-play-state: paused; }
+.gold-marquee-group { display: flex; align-items: center; flex-shrink: 0; }
+.gold-marquee-group span {
+  display: inline-flex; align-items: center; gap: 14px;
+  padding: 0 26px;
+  color: #d8c27a;
+  font: 600 12px "DM Sans"; letter-spacing: .2em; text-transform: uppercase; white-space: nowrap;
+}
+.gold-marquee-group b { color: #f5d36b; font-weight: 400; animation: goldTwinkle 2.4s ease-in-out infinite; }
+@keyframes goldMarquee { to { transform: translateX(-50%); } }
+@keyframes goldTwinkle { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+
+/* Estadísticas con contadores */
+.gold-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  background: rgba(245, 211, 107, .16);
+  border-top: 1px solid rgba(245, 211, 107, .16);
+}
+.gold-stat {
+  padding: clamp(44px, 5vw, 66px) 30px;
+  background: var(--ink);
+  text-align: center;
+}
+.gold-stat strong {
+  display: block;
+  font: 500 clamp(42px, 5vw, 66px)/1 "Oswald";
+  letter-spacing: -.03em;
+  background: linear-gradient(100deg, #f5d36b, #fff6cf 45%, #d4a017);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.gold-stat span { display: block; margin-top: 12px; color: #9a9b8d; font: 500 10px "DM Sans"; letter-spacing: .16em; text-transform: uppercase; }
+
+/* Lista de recursos */
+.gold-list-section { padding: clamp(90px, 11vw, 150px) clamp(24px, 8vw, 130px); scroll-margin-top: 90px; }
+.gold-list-head { max-width: 700px; margin-bottom: clamp(56px, 7vw, 90px); }
+.gold-list-head h2 { margin: 0; font: 500 clamp(44px, 6vw, 84px)/.95 "Oswald"; letter-spacing: -.04em; text-transform: uppercase; }
+.gold-list-head p { margin: 22px 0 0; color: #a3a49a; font: 400 15px/1.75 "DM Sans"; }
+.gold-grid--page { grid-template-columns: repeat(3, 1fr); }
+
+/* Tarjetas con tilt 3D */
+.gold-tilt-card {
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform .18s ease-out, border-color .35s, box-shadow .35s;
+  will-change: transform;
+}
+.gold-tilt-card::before {
+  content: "";
+  position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0;
+  background: radial-gradient(420px 260px at var(--gx, 50%) var(--gy, 50%), rgba(255, 236, 170, .22), transparent 62%);
+  transition: opacity .35s;
+}
+.gold-tilt-card:hover::before { opacity: 1; }
+
+/* Pasos */
+.gold-steps { padding: clamp(90px, 11vw, 150px) clamp(24px, 8vw, 130px); background: var(--ink-soft); border-top: 1px solid rgba(245, 211, 107, .16); }
+.gold-steps-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 24px; margin-bottom: clamp(50px, 6vw, 80px); }
+.gold-steps-head h2 { margin: 0; font: 500 clamp(42px, 5.4vw, 76px)/.95 "Oswald"; letter-spacing: -.04em; text-transform: uppercase; }
+.gold-steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.gold-step {
+  position: relative;
+  padding: 38px;
+  border: 1px solid rgba(245, 211, 107, .2);
+  background: linear-gradient(180deg, rgba(245, 211, 107, .045), rgba(255, 255, 255, .01));
+  transition: border-color .35s, transform .35s;
+}
+.gold-step:hover { transform: translateY(-6px); border-color: rgba(245, 211, 107, .55); }
+.gold-step-icon {
+  width: 54px; height: 54px; display: grid; place-items: center;
+  border: 1px solid rgba(245, 211, 107, .4); border-radius: 50%;
+  color: #ffdf8a; background: rgba(245, 211, 107, .06);
+  transition: .35s;
+}
+.gold-step:hover .gold-step-icon {
+  background: linear-gradient(135deg, #f5d36b, #d4a017 60%, #8a6d1f);
+  border-color: #f5d36b; color: #16120a;
+}
+.gold-step-index { position: absolute; top: 34px; right: 34px; color: rgba(245, 211, 107, .4); font: 500 10px "DM Sans"; letter-spacing: .22em; }
+.gold-step h3 { margin: 26px 0 10px; font: 500 clamp(22px, 2.2vw, 30px)/1.1 "Oswald"; text-transform: uppercase; letter-spacing: -.02em; }
+.gold-step p { margin: 0; color: #a3a49a; font: 400 13px/1.7 "DM Sans"; }
+
+/* CTA final */
+.gold-final {
+  position: relative;
+  padding: clamp(110px, 14vw, 190px) clamp(24px, 8vw, 130px);
+  text-align: center;
+  overflow: hidden;
+  isolation: isolate;
+  border-top: 1px solid rgba(245, 211, 107, .16);
+  background:
+    radial-gradient(760px 460px at 50% 0%, rgba(212, 160, 23, .16), transparent 66%),
+    #0a0b08;
+}
+.gold-final-ring {
+  position: absolute; left: 50%; top: 50%; z-index: -2;
+  width: min(680px, 92vw); aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border: 1px dashed rgba(245, 211, 107, .22);
+  border-radius: 50%;
+  animation: goldOrbit 40s linear infinite;
+}
+.gold-final-ring::before {
+  content: "";
+  position: absolute; inset: 13%;
+  border: 1px solid rgba(245, 211, 107, .14);
+  border-radius: 50%;
+}
+@keyframes goldOrbit { to { transform: translate(-50%, -50%) rotate(360deg); } }
+.gold-final h2 { margin: 0; font: 500 clamp(46px, 6.6vw, 92px)/.93 "Oswald"; letter-spacing: -.04em; text-transform: uppercase; }
+.gold-final .gold-liquid-btn { margin-top: 44px; }
+
+/* Responsive página gold */
+@media (max-width: 1080px) {
+  .gold-grid--page { grid-template-columns: repeat(2, 1fr); }
+  .gold-stats { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 900px) {
+  .gold-steps-grid { grid-template-columns: 1fr; }
+  .gold-hero { padding-top: 130px; }
+  .gold-hero-actions { flex-direction: column; align-items: flex-start; }
+}
+@media (max-width: 640px) {
+  .gold-grid--page { grid-template-columns: 1fr; }
+  .gold-stats { grid-template-columns: 1fr 1fr; }
+  .gold-stat { padding: 36px 18px; }
+  .gold-hud { display: none; }
+  .gold-liquid-btn { width: 100%; justify-content: center; }
+}
+
+/* Estado activo del botón dorado en el header */
+.nav-links .nav-gold.is-active {
+  background: rgba(245, 211, 107, .2);
+  border-color: rgba(255, 230, 150, .95);
+  color: #fff3c4;
+  box-shadow: 0 0 24px rgba(245, 211, 107, .3);
+}
+
+/* Símbolo infinito estático con brillo dorado */
+.gold-stat-inf {
+  animation: goldTwinkle 2.8s ease-in-out infinite;
+  font-size: clamp(46px, 5.4vw, 72px) !important;
+}
