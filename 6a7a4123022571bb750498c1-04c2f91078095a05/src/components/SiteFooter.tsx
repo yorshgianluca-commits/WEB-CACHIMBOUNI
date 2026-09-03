@@ -1,4 +1,5 @@
 import type { NavigateFn } from "../lib/router";
+import ThemeToggle from "./ThemeToggle";
 
 export default function SiteFooter({ navigate }: { navigate: NavigateFn }) {
   return (
@@ -36,6 +37,7 @@ export default function SiteFooter({ navigate }: { navigate: NavigateFn }) {
           Noticias
         </a>
         <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>Volver arriba</button>
+        <ThemeToggle />
       </div>
     </footer>
   );
