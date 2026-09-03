@@ -119,6 +119,46 @@ export default function HomePage({ navigate, path }: HomePageProps) {
             <span className="drive-beta-pulse" aria-hidden="true" />
             <Icon name="external" size={15} />
           </a>
+
+          <div className="hero-destacados" role="navigation" aria-label="Enlaces destacados">
+            <span className="destacados-kicker">
+              <i aria-hidden="true" /> DESTACADOS
+            </span>
+            <div className="destacados-list">
+              <a
+                className="destacado-chip"
+                href="https://universetostudy.com/"
+                target="_blank"
+                rel="noreferrer noopener"
+                aria-label="Abrir Universe To Study"
+              >
+                <span className="destacado-ico" aria-hidden="true">
+                  <Icon name="target" size={16} />
+                </span>
+                <span className="destacado-txt">
+                  <strong>Universe To Study</strong>
+                  <small>Rutas de estudio interactivas · nuevo</small>
+                </span>
+                <Icon name="arrow" size={15} className="destacado-go" />
+              </a>
+              <a
+                className="destacado-chip"
+                href="https://drive.google.com/drive/u/0/folders/1Mn_zvTYOMuE034l92NzXv0obgKLV-J8u"
+                target="_blank"
+                rel="noreferrer noopener"
+                aria-label="Abrir el Drive Banco de Teoría UNI · Tomo II"
+              >
+                <span className="destacado-ico is-drive" aria-hidden="true">
+                  <Icon name="book" size={16} />
+                </span>
+                <span className="destacado-txt">
+                  <strong>Banco de Teoría · Tomo II</strong>
+                  <small>Drive: apuntes y teoría avanzada</small>
+                </span>
+                <Icon name="arrow" size={15} className="destacado-go" />
+              </a>
+            </div>
+          </div>
         </div>
 
         <button className="scroll-cue" onClick={() => scrollTo("metodo")} aria-label="Bajar a la siguiente sección">

@@ -143,30 +143,29 @@ export default function SiteHeader({ navigate, path, variant = "overlay" }: Site
       </nav>
 
       <div className="header-actions">
-        <button
-          className={`header-auth is-logged`}
-          onClick={() => openAuth()}
-          aria-label={session ? `Abrir la cuenta de ${session.name}` : "Abrir mi cuenta"}
-          title="Mi cuenta"
-        >
-          <span className="header-auth-avatar" aria-hidden="true">
-            {session ? session.name.charAt(0).toUpperCase() : "?"}
-          </span>
-          <span>{session ? displayName : "Mi cuenta"}</span>
-        </button>
-
-        <button className="header-cta" onClick={() => navigate("/recursos")}>
-          {onResourcesPage ? "Ver biblioteca" : "Empezar ahora"} <Icon name="arrow" size={17} />
-        </button>
-
-        <button
-          className="header-signout"
-          onClick={() => signOut()}
-          aria-label="Cerrar sesión"
-        >
-          <span>{session ? (session.provider === "google" ? session.name : "Invitado") : "—"}</span>
-          <span className="header-signout-label">· Salir</span>
-        </button>
+        {session ? (
+          <>
+            <button
+              className="header-auth is-logged"
+              onClick={() => openAuth()}
+              aria-label={`Abrir la cuenta de ${session.name}`}
+              title="Mi cuenta"
+            >
+              <span className="header-auth-avatar" aria-hidden="true">
+                {session.name.charAt(0).toUpperCase()}
+              </span>
+              <span>{displayName}</span>
+            </button>
+            <button className="header-signout" onClick={() => signOut()} aria-label="Cerrar sesión">
+              <span>· Salir</span>
+            </button>
+          </>
+        ) : (
+          <button className="header-auth" onClick={() => openAuth()} aria-label="Registrarse en CachimboUNI">
+            <Icon name="spark" size={14} />
+            <span>Registrarse</span>
+          </button>
+        )}
       </div>
 
       <button
