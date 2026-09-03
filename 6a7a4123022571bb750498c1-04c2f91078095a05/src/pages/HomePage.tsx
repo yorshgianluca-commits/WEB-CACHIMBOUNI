@@ -4,8 +4,10 @@ import SiteHeader from "../components/SiteHeader";
 import SiteFooter from "../components/SiteFooter";
 import GoldResources from "../components/GoldResources";
 import GlassNotifications from "../components/GlassNotifications";
-import { useAuth } from "../lib/auth";
-import { CATEGORIES, countByCategory } from "../lib/data";
+import { useAuth } from "../hooks/useAuth";
+import { useUI } from "../lib/ui";
+import { useSiteContent } from "../hooks/useSiteContent";
+import { trackActivity } from "../lib/activity";
 import type { NavigateFn } from "../lib/router";
 
 type HomePageProps = {
@@ -38,7 +40,11 @@ const EXAM_PARTS = [
 ];
 
 export default function HomePage({ navigate, path }: HomePageProps) {
-  const { user, openAuth, logout } = useAuth();
+  const { categories, resources } = useSiteContent();
+  const countByCategory = (categoryId: string) =>
+    resources.filter((item) => item.category === categoryId).length;
+  const { session, signOut } = useAuth();
+  const { openAuth } = useUI();
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -223,11 +229,20 @@ export default function HomePage({ navigate, path }: HomePageProps) {
         </div>
 
         <div className="teaser-grid">
-          {CATEGORIES.map((category) => (
+          {categories.map((category) => (
             <button
               key={category.id}
               className="teaser-box"
-              onClick={() => navigate(`/recursos/${category.id}`)}
+              onClick={() => {
+                trackActivity({
+                  page: "home",
+                  path: `/recursos/${category.id}`,
+                  action: "open_category",
+                  resourceId: category.id,
+                  label: category.name,
+                });
+                navigate(`/recursos/${category.id}`);
+              }}
               aria-label={`Abrir ${category.name}`}
             >
               <div className="teaser-box-top">
@@ -343,23 +358,27 @@ export default function HomePage({ navigate, path }: HomePageProps) {
             </ul>
           </div>
 
-          {user ? (
+          {session ? (
             <div className="registro-user">
               <span className="registro-avatar" aria-hidden="true">
-                {user.name.charAt(0).toUpperCase()}
+                {session.name.charAt(0).toUpperCase()}
               </span>
               <div className="registro-user-info">
                 <p className="auth-kicker is-mint">
-                  {user.method === "google" ? "SESIÓN ACTIVA · GOOGLE" : "SESIÓN ACTIVA · INVITADO"}
+                  {session.provider === "google"
+                    ? "SESIÓN ACTIVA · GOOGLE"
+                    : session.demo
+                      ? "REGISTRO COMPLETADO · GOOGLE (DEMO)"
+                      : "SESIÓN ACTIVA · INVITADO"}
                 </p>
-                <strong>{user.name}</strong>
-                <small>{user.email}</small>
+                <strong>{session.name}</strong>
+                {session.email && <small>{session.email}</small>}
               </div>
               <div className="registro-user-actions">
                 <button className="auth-submit" onClick={() => openAuth()}>
                   Mi cuenta <Icon name="arrow" size={15} />
                 </button>
-                <button className="auth-ghost" onClick={logout}>
+                <button className="auth-ghost" onClick={() => signOut()}>
                   Cerrar sesión
                 </button>
               </div>

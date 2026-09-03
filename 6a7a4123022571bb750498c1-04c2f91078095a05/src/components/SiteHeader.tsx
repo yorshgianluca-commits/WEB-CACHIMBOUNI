@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Icon from "./Icon";
-import { useAuth } from "../lib/auth";
+import { useAuth } from "../hooks/useAuth";
+import { useUI } from "../lib/ui";
 import type { NavigateFn } from "../lib/router";
 
 type SiteHeaderProps = {
@@ -13,7 +14,8 @@ export default function SiteHeader({ navigate, path, variant = "overlay" }: Site
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const onResourcesPage = path.startsWith("/recursos");
-  const { user, openAuth } = useAuth();
+  const { session, signOut } = useAuth();
+  const { openAuth } = useUI();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -45,6 +47,8 @@ export default function SiteHeader({ navigate, path, variant = "overlay" }: Site
   ]
     .filter(Boolean)
     .join(" ");
+
+  const displayName = session ? session.name.split(" ")[0] : "";
 
   return (
     <header className={classes}>
@@ -134,33 +138,34 @@ export default function SiteHeader({ navigate, path, variant = "overlay" }: Site
             openAuth();
           }}
         >
-          {user ? `Hola, ${user.name.split(" ")[0]}` : "Registrarse"}
+          {session ? `Hola, ${displayName}` : "Registrarse"}
         </button>
       </nav>
 
       <div className="header-actions">
         <button
-          className={`header-auth${user ? " is-logged" : ""}`}
+          className={`header-auth is-logged`}
           onClick={() => openAuth()}
-          aria-label={user ? `Abrir cuenta de ${user.name}` : "Registrarse en CachimboUNI"}
+          aria-label={session ? `Abrir la cuenta de ${session.name}` : "Abrir mi cuenta"}
+          title="Mi cuenta"
         >
-          {user ? (
-            <>
-              <span className="header-auth-avatar" aria-hidden="true">
-                {user.name.charAt(0).toUpperCase()}
-              </span>
-              <span>{user.name.split(" ")[0]}</span>
-            </>
-          ) : (
-            <>
-              <Icon name="check" size={14} />
-              <span>Registrarse</span>
-            </>
-          )}
+          <span className="header-auth-avatar" aria-hidden="true">
+            {session ? session.name.charAt(0).toUpperCase() : "?"}
+          </span>
+          <span>{session ? displayName : "Mi cuenta"}</span>
         </button>
 
         <button className="header-cta" onClick={() => navigate("/recursos")}>
           {onResourcesPage ? "Ver biblioteca" : "Empezar ahora"} <Icon name="arrow" size={17} />
+        </button>
+
+        <button
+          className="header-signout"
+          onClick={() => signOut()}
+          aria-label="Cerrar sesión"
+        >
+          <span>{session ? (session.provider === "google" ? session.name : "Invitado") : "—"}</span>
+          <span className="header-signout-label">· Salir</span>
         </button>
       </div>
 

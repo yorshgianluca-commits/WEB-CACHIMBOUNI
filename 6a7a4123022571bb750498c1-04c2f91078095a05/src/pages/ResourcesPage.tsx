@@ -4,7 +4,8 @@ import ParticleField from "../components/ParticleField";
 import SiteHeader from "../components/SiteHeader";
 import SiteFooter from "../components/SiteFooter";
 import GlareCard from "../components/GlareCard";
-import { CATEGORIES, getCategory } from "../lib/data";
+import { useSiteContent } from "../hooks/useSiteContent";
+import { trackActivity } from "../lib/activity";
 import type { CategoryId, ExternalLink } from "../lib/data";
 import type { NavigateFn } from "../lib/router";
 
@@ -36,9 +37,13 @@ const USAGE_STEPS = [
 ];
 
 export default function ResourcesPage({ navigate, path, category }: ResourcesPageProps) {
+  const { categories } = useSiteContent();
   const [activeCategory, setActiveCategory] = useState<CategoryId>(category ?? "teoria");
   const catalogRef = useRef<HTMLDivElement>(null);
   const firstRender = useRef(true);
+
+  const getCategory = (id: CategoryId) =>
+    categories.find((item) => item.id === id) ?? categories[0];
 
   useEffect(() => {
     if (category && category !== activeCategory) setActiveCategory(category);
@@ -48,16 +53,31 @@ export default function ResourcesPage({ navigate, path, category }: ResourcesPag
     if (firstRender.current) {
       firstRender.current = false;
       if (category) {
+        trackActivity({
+          page: "recursos",
+          path: `/recursos/${category}`,
+          action: "land_category",
+          resourceId: category,
+          label: categories.find((item) => item.id === category)?.name,
+        });
         window.setTimeout(
           () => catalogRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
           260
         );
       }
     }
-  }, [category]);
+  }, [category, categories]);
 
   const chooseCategory = (id: CategoryId, scroll = true) => {
     setActiveCategory(id);
+    const found = categories.find((item) => item.id === id);
+    trackActivity({
+      page: "recursos",
+      path: `/recursos/${id}`,
+      action: "open_category",
+      resourceId: id,
+      label: found?.name,
+    });
     navigate(`/recursos/${id}`, { keepScroll: true });
     if (scroll) {
       window.setTimeout(
@@ -102,7 +122,7 @@ export default function ResourcesPage({ navigate, path, category }: ResourcesPag
               <span>Recursos curados</span>
             </div>
             <div>
-              <strong>{CATEGORIES.length}</strong>
+              <strong>{categories.length}</strong>
               <span>categorías</span>
             </div>
             <div>
@@ -134,7 +154,7 @@ export default function ResourcesPage({ navigate, path, category }: ResourcesPag
         </div>
 
         <div className="category-boxes">
-          {CATEGORIES.map((item) => {
+          {categories.map((item) => {
             const isActive = item.id === activeCategory;
             return (
               <article
@@ -184,7 +204,7 @@ export default function ResourcesPage({ navigate, path, category }: ResourcesPag
           </div>
 
           <div className="catalog-tabs" role="tablist" aria-label="Categorías de recursos">
-            {CATEGORIES.map((item) => (
+            {categories.map((item) => (
               <button
                 key={item.id}
                 role="tab"
@@ -208,6 +228,15 @@ export default function ResourcesPage({ navigate, path, category }: ResourcesPag
                 target="_blank"
                 rel="noreferrer noopener"
                 className="collection-box"
+                onClick={() =>
+                  trackActivity({
+                    page: "recursos",
+                    path: `/recursos/${activeCategory}`,
+                    action: "click_collection",
+                    resourceId: link.id,
+                    label: link.title,
+                  })
+                }
               >
                 <div className="collection-box-head">
                   <span className="collection-index">#{String(idx + 1).padStart(2, "0")}</span>

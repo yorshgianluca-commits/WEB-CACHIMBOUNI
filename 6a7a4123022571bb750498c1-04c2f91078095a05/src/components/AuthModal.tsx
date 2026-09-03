@@ -1,15 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Icon from "./Icon";
-import { useAuth } from "../lib/auth";
+import { useAuth } from "../hooks/useAuth";
+import { useUI, markJustRegistered, consumeJustRegistered } from "../lib/ui";
 import type { NavigateFn } from "../lib/router";
 
 /**
- * Modal de registro de CachimboUNI.
+ * Modal de registro / cuenta de CachimboUNI.
  *
- * IMPORTANTE: el flujo de Google está SIMULADO (este sitio es estático, sin backend).
- * Para conectar OAuth real, reemplaza `chooseGoogleAccount` por Google Identity
- * Services (google.accounts.oauth2) o Firebase `signInWithPopup(new GoogleAuthProvider())`
- * y luego llama a `register({ method: "google", ... })` con los datos del perfil.
+ * - Invitado: usa `signInAsGuest` del hook real (sesión local persistente).
+ * - Google: si Supabase está configurado (VITE_SUPABASE_URL + ANON KEY) lanza el
+ *   OAuth real (`signInWithGoogle`); al volver de Google, la ventanita
+ *   "Se ha completado tu registro" se muestra automáticamente (flag de sesión).
+ *   Si Supabase NO está configurado, ofrece un flujo demo para poder probar la UX.
  */
 
 type AuthModalProps = {
@@ -18,7 +20,7 @@ type AuthModalProps = {
 
 type Step = "form" | "google" | "success" | "signed";
 
-const GOOGLE_SUGGESTED = [
+const DEMO_GOOGLE_ACCOUNTS = [
   { name: "Postulante UNI", email: "postulante.uni@gmail.com" },
   { name: "Cachimbo Demo", email: "cachimbo.demo@gmail.com" },
 ];
@@ -37,33 +39,59 @@ function GoogleGlyph() {
 }
 
 export default function AuthModal({ navigate }: AuthModalProps) {
-  const { user, isAuthOpen, authStart, closeAuth, register, logout } = useAuth();
+  const { session, hasGoogle, signInAsGuest, signInWithGoogle, signOut } = useAuth();
+  const { isAuthOpen, authStart, closeAuth } = useUI();
   const [step, setStep] = useState<Step>("form");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [otherEmail, setOtherEmail] = useState("");
   const [otherName, setOtherName] = useState("");
   const [useOther, setUseOther] = useState(false);
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [lastMethod, setLastMethod] = useState<"invitado" | "google">("invitado");
+  const [autoSuccess, setAutoSuccess] = useState(false);
+  const checkedReturn = useRef(false);
 
-  // El paso inicial solo se define al ABRIR el modal; si el usuario se registra
-  // mientras está abierto, dejamos ver la ventanita de éxito antes de "signed".
+  const visible = isAuthOpen || autoSuccess;
+  const needsProfile = !session || (session.provider === "guest" && (!session.email || session.name === "Invitado"));
+
+  // Al volver del OAuth real de Google: ventanita automática de registro completado.
+  useEffect(() => {
+    if (checkedReturn.current) return;
+    checkedReturn.current = true;
+    if (session?.provider === "google" && consumeJustRegistered()) {
+      setLastMethod("google");
+      setStep("success");
+      setAutoSuccess(true);
+    }
+  }, [session]);
+
   useEffect(() => {
     if (isAuthOpen) {
-      setStep(user ? "signed" : authStart);
       setError("");
       setUseOther(false);
       setOtherEmail("");
       setOtherName("");
+      setBusy(false);
+      if (authStart === "google") {
+        setStep("google");
+      } else if (session && !needsProfile) {
+        setStep("signed");
+      } else {
+        setStep("form");
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthOpen]);
+  }, [isAuthOpen, authStart]);
 
   useEffect(() => {
-    if (!isAuthOpen) return;
+    if (!visible) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") closeAuth();
+      if (event.key === "Escape") {
+        setAutoSuccess(false);
+        closeAuth();
+      }
     };
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKey);
@@ -71,9 +99,14 @@ export default function AuthModal({ navigate }: AuthModalProps) {
       document.body.style.overflow = "";
       window.removeEventListener("keydown", onKey);
     };
-  }, [isAuthOpen, closeAuth]);
+  }, [visible, closeAuth]);
 
-  if (!isAuthOpen) return null;
+  if (!visible) return null;
+
+  const dismiss = () => {
+    setAutoSuccess(false);
+    closeAuth();
+  };
 
   const submitGuest = (event: React.FormEvent) => {
     event.preventDefault();
@@ -87,15 +120,27 @@ export default function AuthModal({ navigate }: AuthModalProps) {
     }
     setError("");
     setLastMethod("invitado");
-    register({ name: name.trim(), email: email.trim().toLowerCase(), method: "invitado" });
+    signInAsGuest({ name: name.trim(), email: email.trim().toLowerCase() });
     setStep("success");
   };
 
-  const chooseGoogleAccount = (accountName: string, accountEmail: string) => {
+  const chooseDemoGoogleAccount = (accountName: string, accountEmail: string) => {
     setError("");
     setLastMethod("google");
-    register({ name: accountName, email: accountEmail, method: "google" });
+    signInAsGuest({ name: accountName, email: accountEmail, demo: true });
     setStep("success");
+  };
+
+  const startRealGoogle = async () => {
+    setBusy(true);
+    setError("");
+    markJustRegistered();
+    const res = await signInWithGoogle();
+    setBusy(false);
+    if (!res.ok) {
+      setError(res.error ?? "No se pudo iniciar el login con Google.");
+    }
+    // Si todo va bien, la página redirige a Google y al volver se muestra el éxito.
   };
 
   return (
@@ -105,11 +150,11 @@ export default function AuthModal({ navigate }: AuthModalProps) {
       aria-modal="true"
       aria-label={step === "success" ? "Registro completado" : "Registro en CachimboUNI"}
       onClick={(event) => {
-        if (event.target === event.currentTarget) closeAuth();
+        if (event.target === event.currentTarget) dismiss();
       }}
     >
       <div className={`auth-card ${step === "success" ? "is-success" : ""}`}>
-        <button className="auth-close" onClick={closeAuth} aria-label="Cerrar ventana de registro">
+        <button className="auth-close" onClick={dismiss} aria-label="Cerrar ventana de registro">
           <Icon name="close" size={16} />
         </button>
         <span className="auth-card-glow" aria-hidden="true" />
@@ -117,11 +162,9 @@ export default function AuthModal({ navigate }: AuthModalProps) {
         {step === "form" && (
           <>
             <p className="auth-kicker">COMUNIDAD CACHIMBOUNI</p>
-            <h3>
-              Crea tu cuenta <em>gratis</em>
-            </h3>
+            <h3>{session ? "Completa tu registro" : "Crea tu cuenta gratis"}</h3>
             <p className="auth-sub">
-              Guarda tu progreso, recibe avisos del CEPREUNI y accede a los recursos gold antes que nadie.
+              Guarda tu progreso, recibe los avisos del CEPREUNI y accede a los recursos gold antes que nadie.
             </p>
             <form className="auth-form" onSubmit={submitGuest} noValidate>
               <label>
@@ -146,7 +189,7 @@ export default function AuthModal({ navigate }: AuthModalProps) {
               </label>
               {error && <p className="auth-error" role="alert">{error}</p>}
               <button className="auth-submit" type="submit">
-                Registrarme como invitado <Icon name="arrow" size={16} />
+                {session ? "Guardar mi perfil" : "Registrarme como invitado"} <Icon name="arrow" size={16} />
               </button>
             </form>
             <div className="auth-divider"><span>o continúa con</span></div>
@@ -161,87 +204,114 @@ export default function AuthModal({ navigate }: AuthModalProps) {
 
         {step === "google" && (
           <div className="auth-google-sheet">
-            <div className="auth-google-head">
-              <GoogleGlyph />
-              <div>
-                <strong>Elige una cuenta</strong>
-                <span>para continuar a CachimboUNI</span>
-              </div>
-            </div>
-            {!useOther ? (
-              <div className="auth-google-list">
-                {GOOGLE_SUGGESTED.map((account) => (
-                  <button
-                    key={account.email}
-                    className="auth-google-option"
-                    onClick={() => chooseGoogleAccount(account.name, account.email)}
-                  >
-                    <span className="auth-google-avatar" aria-hidden="true">
-                      {account.name.charAt(0).toUpperCase()}
-                    </span>
-                    <span>
-                      <strong>{account.name}</strong>
-                      <small>{account.email}</small>
-                    </span>
-                    <Icon name="arrow" size={15} />
-                  </button>
-                ))}
-                <button className="auth-google-option is-other" onClick={() => setUseOther(true)}>
-                  <span className="auth-google-avatar is-add" aria-hidden="true">
-                    <Icon name="check" size={15} />
-                  </span>
-                  <span>
-                    <strong>Usar otra cuenta</strong>
-                    <small>Escribe tu correo de Google</small>
-                  </span>
-                  <Icon name="arrow" size={15} />
+            {hasGoogle ? (
+              <>
+                <div className="auth-google-head">
+                  <GoogleGlyph />
+                  <div>
+                    <strong>Entrar con Google</strong>
+                    <span>CachimboUNI se conecta con Supabase</span>
+                  </div>
+                </div>
+                <button className="auth-google" onClick={startRealGoogle} disabled={busy}>
+                  <GoogleGlyph /> {busy ? "Abriendo Google…" : "Continuar con mi cuenta de Google"}
                 </button>
-              </div>
+                {error && <p className="auth-error" role="alert" style={{ marginTop: 12 }}>{error}</p>}
+                <p className="auth-note">
+                  Serás redirigido a Google y volverás aquí con tu sesión iniciada.
+                </p>
+              </>
             ) : (
-              <form
-                className="auth-form"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  const mail = otherEmail.trim().toLowerCase();
-                  if (!EMAIL_RE.test(mail)) {
-                    setError("Escribe un correo de Google válido (ej. nombre@gmail.com).");
-                    return;
-                  }
-                  chooseGoogleAccount(otherName.trim() || mail.split("@")[0].replace(/[._]/g, " "), mail);
-                }}
-                noValidate
-              >
-                <label>
-                  <span>Tu nombre (opcional)</span>
-                  <input
-                    type="text"
-                    value={otherName}
-                    onChange={(e) => setOtherName(e.target.value)}
-                    placeholder="Como te llamaremos en CachimboUNI"
-                  />
-                </label>
-                <label>
-                  <span>Correo de Google</span>
-                  <input
-                    type="email"
-                    value={otherEmail}
-                    onChange={(e) => setOtherEmail(e.target.value)}
-                    placeholder="nombre@gmail.com"
-                    autoFocus
-                  />
-                </label>
-                {error && <p className="auth-error" role="alert">{error}</p>}
-                <button className="auth-submit is-google" type="submit">
-                  <GoogleGlyph /> Continuar con esta cuenta
-                </button>
-                <button className="auth-back" type="button" onClick={() => setUseOther(false)}>
-                  <Icon name="arrowLeft" size={15} /> Volver a la lista
-                </button>
-              </form>
+              <>
+                <div className="auth-google-head">
+                  <GoogleGlyph />
+                  <div>
+                    <strong>Elige una cuenta</strong>
+                    <span>para continuar a CachimboUNI (demo)</span>
+                  </div>
+                </div>
+                {!useOther ? (
+                  <div className="auth-google-list">
+                    {DEMO_GOOGLE_ACCOUNTS.map((account) => (
+                      <button
+                        key={account.email}
+                        className="auth-google-option"
+                        onClick={() => chooseDemoGoogleAccount(account.name, account.email)}
+                      >
+                        <span className="auth-google-avatar" aria-hidden="true">
+                          {account.name.charAt(0).toUpperCase()}
+                        </span>
+                        <span>
+                          <strong>{account.name}</strong>
+                          <small>{account.email}</small>
+                        </span>
+                        <Icon name="arrow" size={15} />
+                      </button>
+                    ))}
+                    <button className="auth-google-option is-other" onClick={() => setUseOther(true)}>
+                      <span className="auth-google-avatar is-add" aria-hidden="true">
+                        <Icon name="check" size={15} />
+                      </span>
+                      <span>
+                        <strong>Usar otra cuenta</strong>
+                        <small>Escribe tu correo de Google</small>
+                      </span>
+                      <Icon name="arrow" size={15} />
+                    </button>
+                  </div>
+                ) : (
+                  <form
+                    className="auth-form"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const mail = otherEmail.trim().toLowerCase();
+                      if (!EMAIL_RE.test(mail)) {
+                        setError("Escribe un correo de Google válido (ej. nombre@gmail.com).");
+                        return;
+                      }
+                      chooseDemoGoogleAccount(
+                        otherName.trim() || mail.split("@")[0].replace(/[._]/g, " "),
+                        mail
+                      );
+                    }}
+                    noValidate
+                  >
+                    <label>
+                      <span>Tu nombre (opcional)</span>
+                      <input
+                        type="text"
+                        value={otherName}
+                        onChange={(e) => setOtherName(e.target.value)}
+                        placeholder="Como te llamaremos en CachimboUNI"
+                      />
+                    </label>
+                    <label>
+                      <span>Correo de Google</span>
+                      <input
+                        type="email"
+                        value={otherEmail}
+                        onChange={(e) => setOtherEmail(e.target.value)}
+                        placeholder="nombre@gmail.com"
+                        autoFocus
+                      />
+                    </label>
+                    {error && <p className="auth-error" role="alert">{error}</p>}
+                    <button className="auth-submit is-google" type="submit">
+                      <GoogleGlyph /> Continuar con esta cuenta
+                    </button>
+                    <button className="auth-back" type="button" onClick={() => setUseOther(false)}>
+                      <Icon name="arrowLeft" size={15} /> Volver a la lista
+                    </button>
+                  </form>
+                )}
+                <p className="auth-note">
+                  Modo demo: configura Supabase (URL + anon key en .env) para habilitar el login real con Google.
+                </p>
+              </>
             )}
-            <p className="auth-note">
-              Demo local: conecta Google OAuth (Firebase o Google Identity Services) para cuentas reales.
-            </p>
+            <button className="auth-back" type="button" onClick={() => setStep("form")} style={{ marginTop: 14 }}>
+              <Icon name="arrowLeft" size={15} /> Volver al registro
+            </button>
           </div>
         )}
 
@@ -257,43 +327,61 @@ export default function AuthModal({ navigate }: AuthModalProps) {
             </h3>
             <p className="auth-sub">
               {lastMethod === "google"
-                ? `Tu cuenta de Google (${user?.email}) quedó vinculada a CachimboUNI.`
-                : `Listo, ${user?.name.split(" ")[0]}: tu registro como invitado se completó correctamente.`}
+                ? `Listo${session ? `, ${session.name.split(" ")[0]}` : ""}: tu cuenta de Google quedó vinculada a CachimboUNI.`
+                : `Listo, ${session?.name.split(" ")[0] ?? name.split(" ")[0]}: tu registro como invitado se completó correctamente.`}
             </p>
             <div className="auth-success-actions">
               <button
                 className="auth-submit"
                 onClick={() => {
-                  closeAuth();
+                  dismiss();
                   navigate("/recursos");
                 }}
               >
                 Ir a la biblioteca <Icon name="arrow" size={16} />
               </button>
-              <button className="auth-ghost" onClick={closeAuth}>
+              <button className="auth-ghost" onClick={dismiss}>
                 Seguir explorando
               </button>
             </div>
           </div>
         )}
 
-        {step === "signed" && (
+        {step === "signed" && session && (
           <div className="auth-success">
             <span className="auth-success-ring is-signed" aria-hidden="true">
-              {user?.name.charAt(0).toUpperCase()}
+              {session.name.charAt(0).toUpperCase()}
             </span>
-            <p className="auth-kicker">{user?.method === "google" ? "CUENTA GOOGLE VINCULADA" : "CUENTA DE INVITADO"}</p>
+            <p className="auth-kicker">
+              {session.provider === "google"
+                ? "CUENTA GOOGLE VINCULADA"
+                : session.demo
+                  ? "CUENTA GOOGLE · DEMO"
+                  : "CUENTA DE INVITADO"}
+            </p>
             <h3>
-              Hola, <em>{user?.name.split(" ")[0]}.</em>
+              Hola, <em>{session.name.split(" ")[0]}.</em>
             </h3>
             <p className="auth-sub">
-              Tu registro ya está activo con {user?.email}. Tu sesión queda guardada en este dispositivo.
+              {session.email
+                ? `Tu registro está activo con ${session.email}. La sesión queda guardada en este dispositivo.`
+                : "Tu registro está activo en este dispositivo. Completa tu correo para recibir los avisos del CEPREUNI."}
             </p>
             <div className="auth-success-actions">
+              {!session.email && (
+                <button className="auth-submit" onClick={() => setStep("form")}>
+                  Completar mi registro <Icon name="arrow" size={16} />
+                </button>
+              )}
+              {session.provider === "guest" && !session.demo && !hasGoogle && (
+                <button className="auth-google" onClick={() => setStep("google")}>
+                  <GoogleGlyph /> Vincular Google
+                </button>
+              )}
               <button
                 className="auth-submit"
                 onClick={() => {
-                  closeAuth();
+                  dismiss();
                   navigate("/recursos");
                 }}
               >
@@ -301,9 +389,9 @@ export default function AuthModal({ navigate }: AuthModalProps) {
               </button>
               <button
                 className="auth-ghost"
-                onClick={() => {
-                  logout();
-                  closeAuth();
+                onClick={async () => {
+                  await signOut();
+                  dismiss();
                 }}
               >
                 Cerrar sesión

@@ -9,15 +9,18 @@ import ToolsStudyPage from "./pages/ToolsStudyPage";
 import AyudaPage from "./pages/AyudaPage";
 import NoticiasPage from "./pages/NoticiasPage";
 import TikTokFloat from "./components/TikTokFloat";
+import AuthGate from "./components/AuthGate";
 import AuthModal from "./components/AuthModal";
-import { AuthProvider } from "./lib/auth";
+import { AuthProvider, useAuth } from "./hooks/useAuth";
+import { UIProvider } from "./lib/ui";
 import { useHashRoute } from "./lib/router";
 import type { CategoryId } from "./lib/data";
 
 const VALID_CATEGORIES: CategoryId[] = ["teoria", "examenes", "libros", "videos"];
 
-export default function App() {
+function AppShell() {
   const { path, navigate } = useHashRoute();
+  const { loading, session } = useAuth();
 
   useEffect(() => {
     if (!window.location.hash) window.location.replace("#/");
@@ -34,6 +37,42 @@ export default function App() {
     else if (path.startsWith("/noticias")) document.title = "Noticias · CachimboUNI";
     else document.title = "CachimboUNI | Ingreso rápido a la UNI";
   }, [path]);
+
+  // Mientras comprobamos la sesión, mostramos una pantalla de carga minimalista.
+  if (loading) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "grid",
+          placeItems: "center",
+          background: "#080b0d",
+          color: "#e8e7e1",
+          fontFamily: "'Inter', sans-serif",
+        }}
+      >
+        <div style={{ textAlign: "center" }}>
+          <div
+            style={{
+              width: 46,
+              height: 46,
+              margin: "0 auto 14px",
+              border: "3px solid rgba(255,255,255,.18)",
+              borderTopColor: "#f3a066",
+              borderRadius: "50%",
+              animation: "spin 0.9s linear infinite",
+            }}
+          />
+          <p style={{ fontSize: 13, color: "#8b918e" }}>Cargando…</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Si no hay sesión activa, pedimos entrar con Google o como invitado.
+  if (!session) {
+    return <AuthGate />;
+  }
 
   const renderPage = () => {
     if (path.startsWith("/recursos-gold")) return <RecursosGoldPage navigate={navigate} path={path} />;
@@ -52,10 +91,20 @@ export default function App() {
   };
 
   return (
-    <AuthProvider>
+    <>
       {renderPage()}
       <TikTokFloat />
       <AuthModal navigate={navigate} />
-    </AuthProvider>
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <UIProvider>
+      <AuthProvider>
+        <AppShell />
+      </AuthProvider>
+    </UIProvider>
   );
 }

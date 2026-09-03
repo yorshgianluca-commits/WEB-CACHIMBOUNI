@@ -3,3 +3,8 @@ dist/
 .vite/
 *.local
 .DS_Store
+
+# Variables de entorno reales (nunca subir claves). Solo versionamos la plantilla.
+.env
+.env.*
+!.env.example

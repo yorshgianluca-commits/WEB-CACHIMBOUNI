@@ -3238,3 +3238,18 @@ footer a:hover, footer > div button:hover { color: var(--orange-light); }
     transition: none !important;
   }
 }
+
+/* ==================================================================== AUTH LOADER */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.header-signout {
+  display: flex; align-items: center; gap: 6px; padding: 10px 0; cursor: pointer;
+  font: 600 11px/1 "DM Sans"; letter-spacing: .12em; text-transform: uppercase;
+  color: rgba(255, 255, 255, .65); border-bottom: 1px solid rgba(255, 255, 255, .4);
+  transition: color .25s, border-color .25s;
+}
+.header-signout:hover { color: #fff; border-color: var(--orange-light); }
+.header-signout-label { color: var(--orange-light); }
+@media (max-width: 1240px) { .header-signout { display: none; } }
