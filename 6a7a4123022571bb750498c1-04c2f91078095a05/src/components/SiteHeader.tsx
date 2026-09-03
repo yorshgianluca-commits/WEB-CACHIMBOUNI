@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import Icon from "./Icon";
+import { useAuth } from "../hooks/useAuth";
+import { useUI } from "../lib/ui";
 import type { NavigateFn } from "../lib/router";
 
 type SiteHeaderProps = {
@@ -12,6 +14,8 @@ export default function SiteHeader({ navigate, path, variant = "overlay" }: Site
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const onResourcesPage = path.startsWith("/recursos");
+  const { session, signOut } = useAuth();
+  const { openAuth } = useUI();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -43,6 +47,8 @@ export default function SiteHeader({ navigate, path, variant = "overlay" }: Site
   ]
     .filter(Boolean)
     .join(" ");
+
+  const displayName = session ? session.name.split(" ")[0] : "";
 
   return (
     <header className={classes}>
@@ -125,11 +131,42 @@ export default function SiteHeader({ navigate, path, variant = "overlay" }: Site
         >
           Recursos Gold
         </button>
+        <button
+          className="nav-register"
+          onClick={() => {
+            setMenuOpen(false);
+            openAuth();
+          }}
+        >
+          {session ? `Hola, ${displayName}` : "Registrarse"}
+        </button>
       </nav>
 
-      <button className="header-cta" onClick={() => navigate("/recursos")}>
-        {onResourcesPage ? "Ver biblioteca" : "Empezar ahora"} <Icon name="arrow" size={17} />
-      </button>
+      <div className="header-actions">
+        {session ? (
+          <>
+            <button
+              className="header-auth is-logged"
+              onClick={() => openAuth()}
+              aria-label={`Abrir la cuenta de ${session.name}`}
+              title="Mi cuenta"
+            >
+              <span className="header-auth-avatar" aria-hidden="true">
+                {session.name.charAt(0).toUpperCase()}
+              </span>
+              <span>{displayName}</span>
+            </button>
+            <button className="header-signout" onClick={() => signOut()} aria-label="Cerrar sesión">
+              <span>· Salir</span>
+            </button>
+          </>
+        ) : (
+          <button className="header-auth" onClick={() => openAuth()} aria-label="Registrarse en CachimboUNI">
+            <Icon name="spark" size={14} />
+            <span>Registrarse</span>
+          </button>
+        )}
+      </div>
 
       <button
         className="menu-button"
