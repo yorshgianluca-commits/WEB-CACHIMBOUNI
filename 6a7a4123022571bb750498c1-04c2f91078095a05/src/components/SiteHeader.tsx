@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Icon from "./Icon";
+import { useAuth } from "../lib/auth";
 import type { NavigateFn } from "../lib/router";
 
 type SiteHeaderProps = {
@@ -12,6 +13,7 @@ export default function SiteHeader({ navigate, path, variant = "overlay" }: Site
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const onResourcesPage = path.startsWith("/recursos");
+  const { user, openAuth } = useAuth();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -125,11 +127,42 @@ export default function SiteHeader({ navigate, path, variant = "overlay" }: Site
         >
           Recursos Gold
         </button>
+        <button
+          className="nav-register"
+          onClick={() => {
+            setMenuOpen(false);
+            openAuth();
+          }}
+        >
+          {user ? `Hola, ${user.name.split(" ")[0]}` : "Registrarse"}
+        </button>
       </nav>
 
-      <button className="header-cta" onClick={() => navigate("/recursos")}>
-        {onResourcesPage ? "Ver biblioteca" : "Empezar ahora"} <Icon name="arrow" size={17} />
-      </button>
+      <div className="header-actions">
+        <button
+          className={`header-auth${user ? " is-logged" : ""}`}
+          onClick={() => openAuth()}
+          aria-label={user ? `Abrir cuenta de ${user.name}` : "Registrarse en CachimboUNI"}
+        >
+          {user ? (
+            <>
+              <span className="header-auth-avatar" aria-hidden="true">
+                {user.name.charAt(0).toUpperCase()}
+              </span>
+              <span>{user.name.split(" ")[0]}</span>
+            </>
+          ) : (
+            <>
+              <Icon name="check" size={14} />
+              <span>Registrarse</span>
+            </>
+          )}
+        </button>
+
+        <button className="header-cta" onClick={() => navigate("/recursos")}>
+          {onResourcesPage ? "Ver biblioteca" : "Empezar ahora"} <Icon name="arrow" size={17} />
+        </button>
+      </div>
 
       <button
         className="menu-button"

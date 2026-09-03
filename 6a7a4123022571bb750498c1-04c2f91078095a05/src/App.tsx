@@ -9,6 +9,8 @@ import ToolsStudyPage from "./pages/ToolsStudyPage";
 import AyudaPage from "./pages/AyudaPage";
 import NoticiasPage from "./pages/NoticiasPage";
 import TikTokFloat from "./components/TikTokFloat";
+import AuthModal from "./components/AuthModal";
+import { AuthProvider } from "./lib/auth";
 import { useHashRoute } from "./lib/router";
 import type { CategoryId } from "./lib/data";
 
@@ -33,84 +35,27 @@ export default function App() {
     else document.title = "CachimboUNI | Ingreso rápido a la UNI";
   }, [path]);
 
-  if (path.startsWith("/recursos-gold")) {
-    return (
-      <>
-        <RecursosGoldPage navigate={navigate} path={path} />
-        <TikTokFloat />
-      </>
-    );
-  }
-
-  if (path.startsWith("/recursos")) {
-    const segment = path.split("/")[2] as CategoryId | undefined;
-    const category = segment && VALID_CATEGORIES.includes(segment) ? segment : null;
-    return (
-      <>
-        <ResourcesPage navigate={navigate} path={path} category={category} />
-        <TikTokFloat />
-      </>
-    );
-  }
-
-  if (path.startsWith("/ruta-uni")) {
-    return (
-      <>
-        <RutaUniPage navigate={navigate} path={path} />
-        <TikTokFloat />
-      </>
-    );
-  }
-
-  if (path.startsWith("/guia")) {
-    return (
-      <>
-        <GuiaPage navigate={navigate} path={path} />
-        <TikTokFloat />
-      </>
-    );
-  }
-
-  if (path.startsWith("/camino-rapido")) {
-    return (
-      <>
-        <CaminoRapidoPage navigate={navigate} path={path} />
-        <TikTokFloat />
-      </>
-    );
-  }
-
-  if (path.startsWith("/tools-study")) {
-    return (
-      <>
-        <ToolsStudyPage navigate={navigate} path={path} />
-        <TikTokFloat />
-      </>
-    );
-  }
-
-  if (path.startsWith("/ayuda")) {
-    return (
-      <>
-        <AyudaPage navigate={navigate} path={path} />
-        <TikTokFloat />
-      </>
-    );
-  }
-
-  if (path.startsWith("/noticias")) {
-    return (
-      <>
-        <NoticiasPage navigate={navigate} path={path} />
-        <TikTokFloat />
-      </>
-    );
-  }
+  const renderPage = () => {
+    if (path.startsWith("/recursos-gold")) return <RecursosGoldPage navigate={navigate} path={path} />;
+    if (path.startsWith("/recursos")) {
+      const segment = path.split("/")[2] as CategoryId | undefined;
+      const category = segment && VALID_CATEGORIES.includes(segment) ? segment : null;
+      return <ResourcesPage navigate={navigate} path={path} category={category} />;
+    }
+    if (path.startsWith("/ruta-uni")) return <RutaUniPage navigate={navigate} path={path} />;
+    if (path.startsWith("/guia")) return <GuiaPage navigate={navigate} path={path} />;
+    if (path.startsWith("/camino-rapido")) return <CaminoRapidoPage navigate={navigate} path={path} />;
+    if (path.startsWith("/tools-study")) return <ToolsStudyPage navigate={navigate} path={path} />;
+    if (path.startsWith("/ayuda")) return <AyudaPage navigate={navigate} path={path} />;
+    if (path.startsWith("/noticias")) return <NoticiasPage navigate={navigate} path={path} />;
+    return <HomePage navigate={navigate} path={path} />;
+  };
 
   return (
-    <>
-      <HomePage navigate={navigate} path={path} />
+    <AuthProvider>
+      {renderPage()}
       <TikTokFloat />
-    </>
+      <AuthModal navigate={navigate} />
+    </AuthProvider>
   );
 }

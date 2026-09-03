@@ -111,6 +111,12 @@ const paths: Record<string, ReactNode> = {
       <path d="M10 19h4" />
     </>
   ),
+  bell: (
+    <>
+      <path d="M6 9a6 6 0 0 1 12 0c0 4.2 1.5 5.6 2 6.5H4c.5-.9 2-2.3 2-6.5Z" />
+      <path d="M10 19.5a2.2 2.2 0 0 0 4 0" />
+    </>
+  ),
 };
 
 type IconProps = {

@@ -3,6 +3,8 @@ import ParticleField from "../components/ParticleField";
 import SiteHeader from "../components/SiteHeader";
 import SiteFooter from "../components/SiteFooter";
 import GoldResources from "../components/GoldResources";
+import GlassNotifications from "../components/GlassNotifications";
+import { useAuth } from "../lib/auth";
 import { CATEGORIES, countByCategory } from "../lib/data";
 import type { NavigateFn } from "../lib/router";
 
@@ -36,6 +38,8 @@ const EXAM_PARTS = [
 ];
 
 export default function HomePage({ navigate, path }: HomePageProps) {
+  const { user, openAuth, logout } = useAuth();
+
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
@@ -43,6 +47,7 @@ export default function HomePage({ navigate, path }: HomePageProps) {
   return (
     <div className="page">
       <SiteHeader navigate={navigate} path={path} />
+      <GlassNotifications />
 
       <section className="hero" id="inicio">
         <div className="hero-image" aria-hidden="true" />
@@ -313,6 +318,69 @@ export default function HomePage({ navigate, path }: HomePageProps) {
               <span key={name} className="home-tools-chip">{name}</span>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="home-registro section-pad" id="registro">
+        <div className="registro-card">
+          <span className="registro-glow" aria-hidden="true" />
+          <div className="registro-copy">
+            <div className="section-index">06 / REGISTRO</div>
+            <p className="eyebrow">Únete a CachimboUNI</p>
+            <h2>
+              Regístrate y lleva tu preparación
+              <br />
+              en <em>otro nivel.</em>
+            </h2>
+            <p className="registro-text">
+              Crea tu cuenta gratis como invitado o con Google: guarda tus recursos favoritos,
+              recibe los avisos del CEPREUNI al instante y desbloquea accesos anticipados.
+            </p>
+            <ul className="registro-benefits">
+              <li><Icon name="check" size={14} /> Avisos de horario y cronograma CEPREUNI</li>
+              <li><Icon name="check" size={14} /> Marcadores y progreso guardados en tu cuenta</li>
+              <li><Icon name="check" size={14} /> Acceso anticipado a Recursos Gold</li>
+            </ul>
+          </div>
+
+          {user ? (
+            <div className="registro-user">
+              <span className="registro-avatar" aria-hidden="true">
+                {user.name.charAt(0).toUpperCase()}
+              </span>
+              <div className="registro-user-info">
+                <p className="auth-kicker is-mint">
+                  {user.method === "google" ? "SESIÓN ACTIVA · GOOGLE" : "SESIÓN ACTIVA · INVITADO"}
+                </p>
+                <strong>{user.name}</strong>
+                <small>{user.email}</small>
+              </div>
+              <div className="registro-user-actions">
+                <button className="auth-submit" onClick={() => openAuth()}>
+                  Mi cuenta <Icon name="arrow" size={15} />
+                </button>
+                <button className="auth-ghost" onClick={logout}>
+                  Cerrar sesión
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="registro-actions">
+              <button className="auth-submit is-lg" onClick={() => openAuth("form")}>
+                Registrarme como invitado <Icon name="arrow" size={16} />
+              </button>
+              <button className="auth-google is-lg" onClick={() => openAuth("google")}>
+                <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+                  <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5Z" />
+                  <path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 16.3 4 9.7 8.3 6.3 14.7Z" />
+                  <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.5 5C9.6 39.6 16.3 44 24 44Z" />
+                  <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.1 5.6l6.2 5.2C36.9 39.2 44 34 44 24c0-1.3-.1-2.3-.4-3.5Z" />
+                </svg>
+                Registrarse con Google
+              </button>
+              <small>Gratis y sin tarjeta. Puedes cerrar sesión cuando quieras.</small>
+            </div>
+          )}
         </div>
       </section>
 
