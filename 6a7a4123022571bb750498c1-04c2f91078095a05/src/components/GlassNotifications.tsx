@@ -276,8 +276,7 @@ export default function GlassNotifications() {
               : "Volver a mostrar los avisos de CEPREUNI"
           }
         >
-          <Icon name={pending > 0 && !collapsed ? "close" : "bell"} size={17} />
-          <span>{pending > 0 ? `Avisos CEPREUNI · ${pending}` : "Volver a mostrar avisos"}</span>
+          <Icon name={pending > 0 && !collapsed ? "close" : "bell"} size={18} />
           {pending > 0 && !collapsed && <em className="glass-bell-dot" aria-hidden="true" />}
         </button>
       </div>
