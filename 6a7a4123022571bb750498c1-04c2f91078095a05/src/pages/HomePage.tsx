@@ -4,10 +4,12 @@ import SiteHeader from "../components/SiteHeader";
 import SiteFooter from "../components/SiteFooter";
 import GoldResources from "../components/GoldResources";
 import GlassNotifications from "../components/GlassNotifications";
-import { useAuth } from "../hooks/useAuth";
-import { useUI } from "../lib/ui";
+import PartnerMarquee from "../components/PartnerMarquee";
+import { FrameSequenceHero, type FrameSequenceStep } from "../components/ui/frame-sequence-hero";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { trackActivity } from "../lib/activity";
+import { useReveal } from "../hooks/useReveal";
+import HomeBackdrop from "../components/HomeBackdrop";
 import type { NavigateFn } from "../lib/router";
 
 type HomePageProps = {
@@ -33,6 +35,62 @@ const METHOD_STEPS = [
   },
 ];
 
+
+const GUIA_FRAME_COUNT = 64;
+const guiaFramePath = (i: number) =>
+  `/frames/guia/frame_${String(i).padStart(4, "0")}.jpg`;
+
+const GUIA_STEPS: FrameSequenceStep[] = [
+  {
+    from: 0.02,
+    to: 0.28,
+    color: "#f3a066",
+    num: "01",
+    total: "04",
+    icon: "✦",
+    title: "14 canales curados.",
+    description:
+      "Los profesores de YouTube que sí explican para el nivel UNI, filtrados uno por uno.",
+    label: "Canales",
+  },
+  {
+    from: 0.28,
+    to: 0.55,
+    color: "#d8763e",
+    num: "02",
+    total: "04",
+    icon: "◐",
+    title: "Método antes que horas.",
+    description:
+      "Dos videos clave sobre cómo estudiar y sostener la disciplina durante todo el ciclo.",
+    label: "Método",
+  },
+  {
+    from: 0.55,
+    to: 0.82,
+    color: "#c25a3a",
+    num: "03",
+    total: "04",
+    icon: "▣",
+    title: "Ordenado por curso.",
+    description:
+      "Matemática, Física, Química y Aptitud: cada canal en el lugar donde te hace falta.",
+    label: "Cursos",
+  },
+  {
+    from: 0.82,
+    to: 1.01,
+    color: "#8c1f36",
+    num: "04",
+    total: "04",
+    icon: "⌁",
+    title: "Sin perderte entre miles.",
+    description:
+      "Una ruta clara para dejar de buscar clases y empezar a avanzar de verdad.",
+    label: "Ruta",
+  },
+];
+
 const EXAM_PARTS = [
   { code: "E1", name: "Aptitud Académica y Humanidades" },
   { code: "E2", name: "Matemática" },
@@ -43,8 +101,8 @@ export default function HomePage({ navigate, path }: HomePageProps) {
   const { categories, resources } = useSiteContent();
   const countByCategory = (categoryId: string) =>
     resources.filter((item) => item.category === categoryId).length;
-  const { session, signOut } = useAuth();
-  const { openAuth } = useUI();
+
+  useReveal([categories.length, resources.length]);
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
@@ -58,8 +116,6 @@ export default function HomePage({ navigate, path }: HomePageProps) {
       <section className="hero" id="inicio">
         <div className="hero-image" aria-hidden="true" />
         <div className="hero-shade" aria-hidden="true" />
-        <div className="orbital orbital-one" aria-hidden="true" />
-        <div className="orbital orbital-two" aria-hidden="true" />
         <ParticleField density={110} />
 
         <div className="hero-uni-crest" aria-hidden="true">
@@ -160,87 +216,113 @@ export default function HomePage({ navigate, path }: HomePageProps) {
         </button>
       </section>
 
-      <section className="manifesto section-pad" id="metodo">
-        <div className="section-index">01 / EL MÉTODO</div>
-        <div className="manifesto-copy">
-          <p className="eyebrow">Preparación con dirección</p>
-          <h2>
-            No necesitas estudiar más.
-            <br />
-            Necesitas estudiar <em>mejor.</em>
-          </h2>
-          <p className="lead">
-            Organizamos lo complejo en una ruta precisa: entiende la teoría, observa el método y
-            resuelve hasta dominarlo.
-          </p>
-        </div>
-        <div className="method-lines">
-          {METHOD_STEPS.map((step) => (
-            <div className="method-step" key={step.index}>
-              <span>{step.index}</span>
-              <h3>{step.title}</h3>
-              <p>{step.text}</p>
-            </div>
-          ))}
-        </div>
+      <div className="home-flow" id="home-flow">
+        <HomeBackdrop targetId="home-flow" />
+        <span className="home-thread" aria-hidden="true" />
 
-        <button className="metodo-highlight" onClick={() => navigate("/camino-rapido")} aria-label="Ir al camino más rápido para ingresar">
-          <div className="metodo-highlight-label">
-            <span className="metodo-highlight-kicker">Propósito</span>
-            <h3>El camino más <em>rápido</em> para ingresar</h3>
-            <p>Anual → Intensivo CEPREUNI → Prácticas y exámenes. Una ruta directa sin rodeos.</p>
+      <section className="metodo-vortex" id="metodo">
+        <div className="metodo-vortex-shade" aria-hidden="true" />
+
+        <div className="metodo-vortex-inner">
+          <div className="section-index is-center">01 / EL MÉTODO</div>
+          <h2 className="metodo-vortex-title">
+            El sistema de preparación
+            <br />
+            <span>para postulantes a la UNI</span>
+          </h2>
+          <p className="metodo-vortex-sub">
+            Coordina teoría, práctica y simulacros en una sola ruta.
+            <br />
+            Material verificado que mantiene cada sesión con dirección y control.
+          </p>
+          <div className="metodo-vortex-actions">
+            <button className="vortex-cta is-solid" onClick={() => navigate("/recursos")}>
+              EMPEZAR AHORA <Icon name="arrow" size={15} />
+            </button>
+            <button className="vortex-cta" onClick={() => navigate("/camino-rapido")}>
+              VER EL CAMINO RÁPIDO
+            </button>
           </div>
-          <span className="metodo-highlight-cta">
-            Explorar ruta <Icon name="arrow" size={18} />
-          </span>
-        </button>
-      </section>
 
-      <section className="subjects section-pad" id="ruta">
-        <div className="subject-visual" aria-hidden="true">
-          <div className="formula formula-a">Σ F = ma</div>
-          <div className="formula formula-b">x² + y² = r²</div>
-          <div className="formula formula-c">n = m / M</div>
-          <div className="subject-ring" />
-          <div className="subject-core">UNI</div>
-        </div>
-        <div className="subject-copy">
-          <div className="section-index">02 / LA RUTA</div>
-          <p className="eyebrow">El examen, sin puntos ciegos</p>
-          <h2>
-            Tres pruebas.
-            <br />
-            Una sola meta.
-          </h2>
-          <p>
-            Entrena las áreas que componen el examen de admisión con una secuencia pensada para
-            avanzar desde tus bases hasta el nivel real de la prueba.
-          </p>
-          <div className="exam-list">
-            {EXAM_PARTS.map((part) => (
-              <div key={part.code}>
-                <span>{part.code}</span>
-                <strong>{part.name}</strong>
+          <div className="metodo-vortex-steps">
+            {METHOD_STEPS.map((step) => (
+              <div className="vortex-step" key={step.index}>
+                <span>{step.index}</span>
+                <h3>{step.title}</h3>
+                <p>{step.text}</p>
               </div>
             ))}
           </div>
-          <div className="subject-actions">
-            <button className="primary-button" onClick={() => navigate("/ruta-uni")}>
-              Conocer el campus <Icon name="arrow" />
-            </button>
-            <a
-              className="inline-link"
-              href="https://admision.uni.edu.pe/admision2026-2/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              Información oficial <Icon name="external" size={16} />
-            </a>
+        </div>
+
+        <div className="metodo-vortex-foot">
+          <PartnerMarquee />
+        </div>
+      </section>
+
+      <div className="section-seam" aria-hidden="true" />
+      <section className="ruta-aero" id="ruta">
+        <div className="ruta-aero-inner">
+          <div className="ruta-glass">
+            <div className="ruta-glass-sheen" aria-hidden="true" />
+            <div className="ruta-glass-body">
+              <div className="section-index is-warm">02 / LA RUTA</div>
+              <p className="eyebrow is-warm">El examen, sin puntos ciegos</p>
+              <h2 className="ruta-title">
+                Tres pruebas.
+                <br />
+                <span>Una sola meta.</span>
+              </h2>
+              <p className="ruta-lead">
+                Entrena las áreas que componen el examen de admisión con una secuencia pensada para
+                avanzar desde tus bases hasta el nivel real de la prueba.
+              </p>
+
+              <div className="ruta-exams">
+                {EXAM_PARTS.map((part) => (
+                  <div className="ruta-exam" key={part.code}>
+                    <span>{part.code}</span>
+                    <strong>{part.name}</strong>
+                    <Icon name="arrow" size={15} />
+                  </div>
+                ))}
+              </div>
+
+              <div className="ruta-actions">
+                <button className="ruta-cta is-solid" onClick={() => navigate("/ruta-uni")}>
+                  Conocer el campus <Icon name="arrow" size={15} />
+                </button>
+                <a
+                  className="ruta-cta"
+                  href="https://admision.uni.edu.pe/admision2026-2/"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  Información oficial <Icon name="external" size={15} />
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div className="ruta-glass is-aside">
+            <div className="ruta-glass-sheen" aria-hidden="true" />
+            <div className="ruta-orbit" aria-hidden="true">
+              <span className="ruta-orbit-ring" />
+              <span className="ruta-orbit-ring is-two" />
+              <span className="ruta-orbit-core">UNI</span>
+              <span className="ruta-formula is-a">Σ F = ma</span>
+              <span className="ruta-formula is-b">x² + y² = r²</span>
+              <span className="ruta-formula is-c">n = m / M</span>
+            </div>
+            <p className="ruta-aside-note">
+              Mantén pulsado sobre el fondo para reunir las esquirlas.
+            </p>
           </div>
         </div>
       </section>
 
-      <section className="library-teaser section-pad" id="recursos">
+      <div className="section-seam" aria-hidden="true" />
+      <section className="library-teaser section-pad reveal-up" id="recursos">
         <div className="teaser-head">
           <div>
             <div className="section-index">03 / BIBLIOTECA ABIERTA</div>
@@ -312,38 +394,33 @@ export default function HomePage({ navigate, path }: HomePageProps) {
         </div>
       </section>
 
+      <div className="section-seam" aria-hidden="true" />
       <GoldResources navigate={navigate} />
 
-      <section className="home-guia section-pad">
-        <div className="home-guia-inner">
-          <div className="home-guia-left">
-            <div className="section-index">04 / GUÍA · NUEVO</div>
-            <p className="eyebrow">Canales y videos curados</p>
-            <h2>
+      <div className="section-seam" aria-hidden="true" />
+      <section className="home-guia-seq" id="guia">
+        <FrameSequenceHero
+          frameCount={GUIA_FRAME_COUNT}
+          framePath={guiaFramePath}
+          eagerCount={20}
+          scrollHeight="260vh"
+          kicker="04 / GUÍA · NUEVO"
+          title={
+            <>
               Canales y videos
               <br />
-              <em>recomendados.</em>
-            </h2>
-            <p>
-              14 canales curados de YouTube y 2 videos clave para método y mentalidad. Una guía clara
-              para no perderte entre miles de clases.
-            </p>
-            <button className="primary-button" onClick={() => navigate("/guia")}>
-              Entrar a la guía <Icon name="arrow" />
-            </button>
-          </div>
-          <div className="home-guia-right" aria-hidden="true">
-            <div className="mini-dither-grid">
-              {Array.from({ length: 64 }).map((_, i) => (
-                <span key={i} style={{ opacity: Math.random() * 0.5 + 0.2 }} />
-              ))}
-            </div>
-            <div className="mini-crest">UNI</div>
-          </div>
-        </div>
+              <span className="fsh-title-accent">recomendados.</span>
+            </>
+          }
+          subtitle="Desplázate para recorrer la guía."
+          ctaLabel="Entrar a la guía"
+          onCta={() => navigate("/guia")}
+          steps={GUIA_STEPS}
+        />
       </section>
 
-      <section className="home-tools section-pad">
+      <div className="section-seam" aria-hidden="true" />
+      <section className="home-tools section-pad reveal-up">
         <div className="home-tools-inner">
           <div>
             <div className="section-index">05 / TOOLS STUDY</div>
@@ -369,74 +446,8 @@ export default function HomePage({ navigate, path }: HomePageProps) {
         </div>
       </section>
 
-      <section className="home-registro section-pad" id="registro">
-        <div className="registro-card">
-          <span className="registro-glow" aria-hidden="true" />
-          <div className="registro-copy">
-            <div className="section-index">06 / REGISTRO</div>
-            <p className="eyebrow">Únete a CachimboUNI</p>
-            <h2>
-              Regístrate y lleva tu preparación
-              <br />
-              en <em>otro nivel.</em>
-            </h2>
-            <p className="registro-text">
-              Crea tu cuenta gratis como invitado o con Google: guarda tus recursos favoritos,
-              recibe los avisos del CEPREUNI al instante y desbloquea accesos anticipados.
-            </p>
-            <ul className="registro-benefits">
-              <li><Icon name="check" size={14} /> Avisos de horario y cronograma CEPREUNI</li>
-              <li><Icon name="check" size={14} /> Marcadores y progreso guardados en tu cuenta</li>
-              <li><Icon name="check" size={14} /> Acceso anticipado a Recursos Gold</li>
-            </ul>
-          </div>
-
-          {session ? (
-            <div className="registro-user">
-              <span className="registro-avatar" aria-hidden="true">
-                {session.name.charAt(0).toUpperCase()}
-              </span>
-              <div className="registro-user-info">
-                <p className="auth-kicker is-mint">
-                  {session.provider === "google"
-                    ? "SESIÓN ACTIVA · GOOGLE"
-                    : session.demo
-                      ? "REGISTRO COMPLETADO · GOOGLE (DEMO)"
-                      : "SESIÓN ACTIVA · INVITADO"}
-                </p>
-                <strong>{session.name}</strong>
-                {session.email && <small>{session.email}</small>}
-              </div>
-              <div className="registro-user-actions">
-                <button className="auth-submit" onClick={() => openAuth()}>
-                  Mi cuenta <Icon name="arrow" size={15} />
-                </button>
-                <button className="auth-ghost" onClick={() => signOut()}>
-                  Cerrar sesión
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="registro-actions">
-              <button className="auth-submit is-lg" onClick={() => openAuth("form")}>
-                Registrarme como invitado <Icon name="arrow" size={16} />
-              </button>
-              <button className="auth-google is-lg" onClick={() => openAuth("google")}>
-                <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
-                  <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.3-.4-3.5Z" />
-                  <path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 16.3 4 9.7 8.3 6.3 14.7Z" />
-                  <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.5 5C9.6 39.6 16.3 44 24 44Z" />
-                  <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.1 5.6l6.2 5.2C36.9 39.2 44 34 44 24c0-1.3-.1-2.3-.4-3.5Z" />
-                </svg>
-                Registrarse con Google
-              </button>
-              <small>Gratis y sin tarjeta. Puedes cerrar sesión cuando quieras.</small>
-            </div>
-          )}
-        </div>
-      </section>
-
-      <section className="commitment section-pad">
+      <div className="section-seam" aria-hidden="true" />
+      <section className="commitment section-pad reveal-up">
         <div className="uni-mark">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/f/f7/Uni-logo_transparente_granate.png"
@@ -445,7 +456,7 @@ export default function HomePage({ navigate, path }: HomePageProps) {
           />
         </div>
         <div className="commitment-copy">
-          <div className="section-index">04 / EL COMPROMISO</div>
+          <div className="section-index">06 / EL COMPROMISO</div>
           <blockquote>
             “El talento abre la puerta.
             <br />
@@ -458,6 +469,8 @@ export default function HomePage({ navigate, path }: HomePageProps) {
           </p>
         </div>
       </section>
+
+      </div>
 
       <section className="final-cta section-pad">
         <div className="cta-grid" aria-hidden="true" />

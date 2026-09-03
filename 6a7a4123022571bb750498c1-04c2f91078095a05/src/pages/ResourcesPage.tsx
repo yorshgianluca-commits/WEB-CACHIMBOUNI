@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import Icon from "../components/Icon";
 import ParticleField from "../components/ParticleField";
+import DitherWave from "../components/ui/dither-wave";
 import SiteHeader from "../components/SiteHeader";
 import SiteFooter from "../components/SiteFooter";
-import GlareCard from "../components/GlareCard";
 import { useSiteContent } from "../hooks/useSiteContent";
 import { trackActivity } from "../lib/activity";
 import type { CategoryId, ExternalLink } from "../lib/data";
@@ -93,9 +93,19 @@ export default function ResourcesPage({ navigate, path, category }: ResourcesPag
     <div className="page resources-page">
       <SiteHeader navigate={navigate} path={path} variant="solid" />
 
-      <section className="page-hero">
-        <ParticleField density={70} parallax={16} className="particle-canvas page-hero-canvas" />
-        <div className="page-hero-glow" aria-hidden="true" />
+      <section className="page-hero is-dither">
+        <DitherWave
+          className="dither-wave"
+          background="#080b0d"
+          color="#8c1f36"
+          accent="#f3a066"
+          pixelSize={3}
+          speed={0.85}
+          amplitude={1}
+          scale={1}
+        />
+        <div className="dither-veil" aria-hidden="true" />
+        <ParticleField density={40} parallax={16} className="particle-canvas page-hero-canvas" />
         <div className="page-hero-inner">
           <nav className="breadcrumb" aria-label="Ruta de navegación">
             <button onClick={() => navigate("/")} aria-label="Volver al inicio">
@@ -135,16 +145,12 @@ export default function ResourcesPage({ navigate, path, category }: ResourcesPag
             </div>
           </div>
         </div>
-        <div className="page-hero-glare">
-          <GlareCard
-            image="/images/resources-path.jpg"
-            eyebrow="Biblioteca abierta"
-            title="Encuentra tu camino"
-            description="Teoría, exámenes y libros para iluminar la siguiente etapa."
-            action="Ver carpetas"
-            onClick={() => catalogRef.current?.scrollIntoView({ behavior: "smooth" })}
-          />
-        </div>
+        <button
+          className="hero-scroll-cta"
+          onClick={() => catalogRef.current?.scrollIntoView({ behavior: "smooth" })}
+        >
+          Ver carpetas <Icon name="arrow" size={16} />
+        </button>
       </section>
 
       <section className="category-section">
