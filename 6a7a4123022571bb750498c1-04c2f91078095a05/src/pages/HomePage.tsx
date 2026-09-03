@@ -90,35 +90,28 @@ export default function HomePage({ navigate, path }: HomePageProps) {
             <button className="primary-button" onClick={() => navigate("/recursos")}>
               Explorar biblioteca <Icon name="arrow" />
             </button>
-            <button className="text-button" onClick={() => scrollTo("metodo")}>
-              <span className="play-circle">
-                <Icon name="play" size={14} />
-              </span>{" "}
-              Conoce el método
-            </button>
+            <a
+              className="drive-beta"
+              href="https://drive.google.com/drive/folders/1Ip3I5jgEgOxFGE1vYHGpfRtpP4jJtXo5?usp=drive_link"
+              target="_blank"
+              rel="noreferrer noopener"
+              aria-label="Abrir Drive V. Beta con material de preparación"
+            >
+              <span className="drive-beta-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" width="22" height="22" aria-hidden="true">
+                  <path d="M7.5 16.5 4 20.5h16l-3.5-4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                  <path d="M9 3h6l5 8.5-3 5H7l-3-5Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
+                  <path d="M12 3v12.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+                </svg>
+              </span>
+              <span className="drive-beta-text">
+                <span className="drive-beta-kicker">Acceso rápido</span>
+                <strong>Drive V. Beta</strong>
+              </span>
+              <span className="drive-beta-pulse" aria-hidden="true" />
+              <Icon name="external" size={15} />
+            </a>
           </div>
-
-          <a
-            className="drive-beta"
-            href="https://drive.google.com/drive/folders/1Ip3I5jgEgOxFGE1vYHGpfRtpP4jJtXo5?usp=drive_link"
-            target="_blank"
-            rel="noreferrer noopener"
-            aria-label="Abrir Drive V. Beta con material de preparación"
-          >
-            <span className="drive-beta-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none" width="22" height="22" aria-hidden="true">
-                <path d="M7.5 16.5 4 20.5h16l-3.5-4" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M9 3h6l5 8.5-3 5H7l-3-5Z" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" />
-                <path d="M12 3v12.5" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
-              </svg>
-            </span>
-            <span className="drive-beta-text">
-              <span className="drive-beta-kicker">Acceso rápido</span>
-              <strong>Drive V. Beta</strong>
-            </span>
-            <span className="drive-beta-pulse" aria-hidden="true" />
-            <Icon name="external" size={15} />
-          </a>
 
           <div className="hero-destacados" role="navigation" aria-label="Enlaces destacados">
             <span className="destacados-kicker">
