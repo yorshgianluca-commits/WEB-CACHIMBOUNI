@@ -132,7 +132,6 @@ h1 em, h2 em, blockquote em { color: var(--orange-light); font-style: normal; fo
 
 .drive-beta {
   position: relative;
-  margin-top: 32px;
   display: inline-flex;
   align-items: center;
   gap: 16px;
@@ -142,7 +141,6 @@ h1 em, h2 em, blockquote em { color: var(--orange-light); font-style: normal; fo
   background: linear-gradient(135deg, rgba(216, 118, 62, .16), rgba(216, 118, 62, .04));
   color: var(--paper);
   text-decoration: none;
-  animation: rise 1s .85s both;
   transition: border-color .3s, background .3s, transform .3s;
   overflow: hidden;
 }
@@ -213,8 +211,6 @@ h1 em, h2 em, blockquote em { color: var(--orange-light); font-style: normal; fo
 }
 .ghost-button:hover { background: rgba(0, 0, 0, .06); }
 .ghost-button.is-saved { border-color: var(--orange); color: var(--orange); }
-.text-button { display: flex; align-items: center; gap: 11px; padding: 0; font: 500 12px "DM Sans"; cursor: pointer; }
-.play-circle { width: 38px; height: 38px; border: 1px solid rgba(255, 255, 255, .45); border-radius: 50%; display: grid; place-items: center; padding-left: 2px; }
 .scroll-cue {
   position: absolute; left: clamp(24px, 5vw, 76px); bottom: 35px; display: flex; align-items: center; gap: 14px;
   text-transform: uppercase; letter-spacing: .18em; font-size: 9px; color: rgba(255, 255, 255, .55);
@@ -681,7 +677,7 @@ footer a:hover, footer > div button:hover { color: var(--orange-light); }
   .hero h1 { font-size: clamp(43px, 14vw, 70px); }
   .hero-content > p { margin: 22px 0 28px; font-size: 14px; }
   .hero-actions { align-items: flex-start; flex-direction: column; gap: 20px; }
-  .drive-beta { margin-top: 24px; width: 100%; max-width: 100%; justify-content: space-between; padding-right: 18px; }
+  .drive-beta { width: 100%; max-width: 100%; justify-content: space-between; padding-right: 18px; }
   .scroll-cue { display: none; }
   .section-pad, .page-hero, .category-section, .catalog, .usage-section { padding-left: 24px; padding-right: 24px; }
   .method-lines { grid-template-columns: 1fr; border-top: 1px solid var(--line); }
