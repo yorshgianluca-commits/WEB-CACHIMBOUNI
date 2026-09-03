@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Icon from "./Icon";
+import { useAuth } from "../hooks/useAuth";
 import type { NavigateFn } from "../lib/router";
 
 type SiteHeaderProps = {
@@ -11,6 +12,7 @@ type SiteHeaderProps = {
 export default function SiteHeader({ navigate, path, variant = "overlay" }: SiteHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { session, signOut } = useAuth();
   const onResourcesPage = path.startsWith("/recursos");
 
   useEffect(() => {
@@ -127,9 +129,40 @@ export default function SiteHeader({ navigate, path, variant = "overlay" }: Site
         </button>
       </nav>
 
-      <button className="header-cta" onClick={() => navigate("/recursos")}>
-        {onResourcesPage ? "Ver biblioteca" : "Empezar ahora"} <Icon name="arrow" size={17} />
-      </button>
+      <div
+        style={{
+          justifySelf: "end",
+          display: "flex",
+          alignItems: "center",
+          gap: 16,
+        }}
+      >
+        <button className="header-cta" onClick={() => navigate("/recursos")}>
+          {onResourcesPage ? "Ver biblioteca" : "Empezar ahora"} <Icon name="arrow" size={17} />
+        </button>
+        <button
+          onClick={() => signOut()}
+          aria-label="Cerrar sesión"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            padding: "10px 0",
+            fontSize: 11,
+            fontWeight: 600,
+            letterSpacing: "0.12em",
+            textTransform: "uppercase",
+            fontFamily: "'DM Sans', sans-serif",
+            color: "rgba(255,255,255,.65)",
+            cursor: "pointer",
+            borderBottom: "1px solid rgba(255,255,255,.4)",
+            transition: "color .25s, border-color .25s",
+          }}
+        >
+          {session?.provider === "google" ? session.name : "Invitado"}
+          <span style={{ color: "#f3a066" }}>· Salir</span>
+        </button>
+      </div>
 
       <button
         className="menu-button"

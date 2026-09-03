@@ -3,7 +3,8 @@ import ParticleField from "../components/ParticleField";
 import SiteHeader from "../components/SiteHeader";
 import SiteFooter from "../components/SiteFooter";
 import GoldResources from "../components/GoldResources";
-import { CATEGORIES, countByCategory } from "../lib/data";
+import { useSiteContent } from "../hooks/useSiteContent";
+import { trackActivity } from "../lib/activity";
 import type { NavigateFn } from "../lib/router";
 
 type HomePageProps = {
@@ -36,6 +37,10 @@ const EXAM_PARTS = [
 ];
 
 export default function HomePage({ navigate, path }: HomePageProps) {
+  const { categories, resources } = useSiteContent();
+  const countByCategory = (categoryId: string) =>
+    resources.filter((item) => item.category === categoryId).length;
+
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
@@ -218,11 +223,20 @@ export default function HomePage({ navigate, path }: HomePageProps) {
         </div>
 
         <div className="teaser-grid">
-          {CATEGORIES.map((category) => (
+          {categories.map((category) => (
             <button
               key={category.id}
               className="teaser-box"
-              onClick={() => navigate(`/recursos/${category.id}`)}
+              onClick={() => {
+                trackActivity({
+                  page: "home",
+                  path: `/recursos/${category.id}`,
+                  action: "open_category",
+                  resourceId: category.id,
+                  label: category.name,
+                });
+                navigate(`/recursos/${category.id}`);
+              }}
               aria-label={`Abrir ${category.name}`}
             >
               <div className="teaser-box-top">
