@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Icon from "./Icon";
 import { useAuth } from "../hooks/useAuth";
+import { useUI } from "../lib/ui";
 import type { NavigateFn } from "../lib/router";
 
 type SiteHeaderProps = {
@@ -12,8 +13,9 @@ type SiteHeaderProps = {
 export default function SiteHeader({ navigate, path, variant = "overlay" }: SiteHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { session, signOut } = useAuth();
   const onResourcesPage = path.startsWith("/recursos");
+  const { session, signOut } = useAuth();
+  const { openAuth } = useUI();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -45,6 +47,8 @@ export default function SiteHeader({ navigate, path, variant = "overlay" }: Site
   ]
     .filter(Boolean)
     .join(" ");
+
+  const displayName = session ? session.name.split(" ")[0] : "";
 
   return (
     <header className={classes}>
@@ -127,41 +131,41 @@ export default function SiteHeader({ navigate, path, variant = "overlay" }: Site
         >
           Recursos Gold
         </button>
-      </nav>
-
-      <div
-        style={{
-          justifySelf: "end",
-          display: "flex",
-          alignItems: "center",
-          gap: 16,
-        }}
-      >
-        <button className="header-cta" onClick={() => navigate("/recursos")}>
-          {onResourcesPage ? "Ver biblioteca" : "Empezar ahora"} <Icon name="arrow" size={17} />
-        </button>
         <button
-          onClick={() => signOut()}
-          aria-label="Cerrar sesión"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-            padding: "10px 0",
-            fontSize: 11,
-            fontWeight: 600,
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-            fontFamily: "'DM Sans', sans-serif",
-            color: "rgba(255,255,255,.65)",
-            cursor: "pointer",
-            borderBottom: "1px solid rgba(255,255,255,.4)",
-            transition: "color .25s, border-color .25s",
+          className="nav-register"
+          onClick={() => {
+            setMenuOpen(false);
+            openAuth();
           }}
         >
-          {session?.provider === "google" ? session.name : "Invitado"}
-          <span style={{ color: "#f3a066" }}>· Salir</span>
+          {session ? `Hola, ${displayName}` : "Registrarse"}
         </button>
+      </nav>
+
+      <div className="header-actions">
+        {session ? (
+          <>
+            <button
+              className="header-auth is-logged"
+              onClick={() => openAuth()}
+              aria-label={`Abrir la cuenta de ${session.name}`}
+              title="Mi cuenta"
+            >
+              <span className="header-auth-avatar" aria-hidden="true">
+                {session.name.charAt(0).toUpperCase()}
+              </span>
+              <span>{displayName}</span>
+            </button>
+            <button className="header-signout" onClick={() => signOut()} aria-label="Cerrar sesión">
+              <span>· Salir</span>
+            </button>
+          </>
+        ) : (
+          <button className="header-auth" onClick={() => openAuth()} aria-label="Registrarse en CachimboUNI">
+            <Icon name="spark" size={14} />
+            <span>Registrarse</span>
+          </button>
+        )}
       </div>
 
       <button

@@ -16,6 +16,8 @@ export type AuthSession = {
   provider: AuthProviderId;
   name: string;
   email?: string;
+  /** true cuando el registro se hizo en modo demo (Sin Supabase configurado). */
+  demo?: boolean;
 };
 
 type AuthContextValue = {
@@ -24,7 +26,12 @@ type AuthContextValue = {
   /** true si Supabase está configurado y el login con Google está disponible. */
   hasGoogle: boolean;
   signInWithGoogle: () => Promise<{ ok: boolean; error?: string }>;
-  signInAsGuest: () => void;
+  /**
+   * Inicia una sesión local de invitado. `profile` es opcional (AuthGate la llama
+   * sin argumentos); el modal de registro pasa nombre/correo y marca `demo`
+   * cuando imita el flujo de Google sin Supabase configurado.
+   */
+  signInAsGuest: (profile?: { name?: string; email?: string; demo?: boolean }) => void;
   signOut: () => Promise<void>;
 };
 
@@ -127,11 +134,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const signInAsGuest = useCallback(() => {
-    const guest: AuthSession = { provider: "guest", name: "Invitado" };
-    writeGuest(guest);
-    setSession(guest);
-  }, []);
+  const signInAsGuest = useCallback(
+    (profile?: { name?: string; email?: string; demo?: boolean }) => {
+      const name = profile?.name?.trim();
+      const email = profile?.email?.trim();
+      const guest: AuthSession = {
+        provider: "guest",
+        name: name || "Invitado",
+        ...(email ? { email } : {}),
+        ...(profile?.demo ? { demo: true } : {}),
+      };
+      writeGuest(guest);
+      setSession(guest);
+    },
+    []
+  );
 
   const signOut = useCallback(async () => {
     const current = readGuest();
