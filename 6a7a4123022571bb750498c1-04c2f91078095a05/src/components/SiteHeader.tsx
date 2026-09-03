@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import Icon from "./Icon";
-import ThemeToggle from "./ThemeToggle";
 import type { NavigateFn } from "../lib/router";
 
 type SiteHeaderProps = {
@@ -128,12 +127,9 @@ export default function SiteHeader({ navigate, path, variant = "overlay" }: Site
         </button>
       </nav>
 
-      <div className="header-actions">
-        <ThemeToggle />
-        <button className="header-cta" onClick={() => navigate("/recursos")}>
-          {onResourcesPage ? "Ver biblioteca" : "Empezar ahora"} <Icon name="arrow" size={17} />
-        </button>
-      </div>
+      <button className="header-cta" onClick={() => navigate("/recursos")}>
+        {onResourcesPage ? "Ver biblioteca" : "Empezar ahora"} <Icon name="arrow" size={17} />
+      </button>
 
       <button
         className="menu-button"
