@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import type { ReactNode } from "react";
 import HomePage from "./pages/HomePage";
 import ResourcesPage from "./pages/ResourcesPage";
 import RecursosGoldPage from "./pages/RecursosGoldPage";
@@ -9,6 +10,7 @@ import ToolsStudyPage from "./pages/ToolsStudyPage";
 import AyudaPage from "./pages/AyudaPage";
 import NoticiasPage from "./pages/NoticiasPage";
 import TikTokFloat from "./components/TikTokFloat";
+import LightFX from "./components/LightFX";
 import { useHashRoute } from "./lib/router";
 import type { CategoryId } from "./lib/data";
 
@@ -33,75 +35,70 @@ export default function App() {
     else document.title = "CachimboUNI | Ingreso rápido a la UNI";
   }, [path]);
 
+  let content: ReactNode;
+
   if (path.startsWith("/recursos-gold")) {
-    return (
+    content = (
       <>
         <RecursosGoldPage navigate={navigate} path={path} />
         <TikTokFloat />
       </>
     );
-  }
-
-  if (path.startsWith("/recursos")) {
+  } else if (path.startsWith("/recursos")) {
     const segment = path.split("/")[2] as CategoryId | undefined;
     const category = segment && VALID_CATEGORIES.includes(segment) ? segment : null;
-    return (
+    content = (
       <>
         <ResourcesPage navigate={navigate} path={path} category={category} />
         <TikTokFloat />
       </>
     );
-  }
-
-  if (path.startsWith("/ruta-uni")) {
-    return (
+  } else if (path.startsWith("/ruta-uni")) {
+    content = (
       <>
         <RutaUniPage navigate={navigate} path={path} />
         <TikTokFloat />
       </>
     );
-  }
-
-  if (path.startsWith("/guia")) {
-    return (
+  } else if (path.startsWith("/guia")) {
+    content = (
       <>
         <GuiaPage navigate={navigate} path={path} />
         <TikTokFloat />
       </>
     );
-  }
-
-  if (path.startsWith("/camino-rapido")) {
-    return (
+  } else if (path.startsWith("/camino-rapido")) {
+    content = (
       <>
         <CaminoRapidoPage navigate={navigate} path={path} />
         <TikTokFloat />
       </>
     );
-  }
-
-  if (path.startsWith("/tools-study")) {
-    return (
+  } else if (path.startsWith("/tools-study")) {
+    content = (
       <>
         <ToolsStudyPage navigate={navigate} path={path} />
         <TikTokFloat />
       </>
     );
-  }
-
-  if (path.startsWith("/ayuda")) {
-    return (
+  } else if (path.startsWith("/ayuda")) {
+    content = (
       <>
         <AyudaPage navigate={navigate} path={path} />
         <TikTokFloat />
       </>
     );
-  }
-
-  if (path.startsWith("/noticias")) {
-    return (
+  } else if (path.startsWith("/noticias")) {
+    content = (
       <>
         <NoticiasPage navigate={navigate} path={path} />
+        <TikTokFloat />
+      </>
+    );
+  } else {
+    content = (
+      <>
+        <HomePage navigate={navigate} path={path} />
         <TikTokFloat />
       </>
     );
@@ -109,8 +106,8 @@ export default function App() {
 
   return (
     <>
-      <HomePage navigate={navigate} path={path} />
-      <TikTokFloat />
+      {content}
+      <LightFX />
     </>
   );
 }
