@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Icon from "../components/Icon";
 import ParticleField from "../components/ParticleField";
+import DitherWave from "../components/ui/dither-wave";
 import SiteHeader from "../components/SiteHeader";
 import SiteFooter from "../components/SiteFooter";
 import ContainerScroll from "../components/ContainerScroll";
@@ -71,9 +72,19 @@ export default function GuiaPage({ navigate, path }: GuiaPageProps) {
     <div className="page guia-page">
       <SiteHeader navigate={navigate} path={path} variant="solid" />
 
-      <section className="page-hero guia-hero">
-        <ParticleField density={45} parallax={10} className="particle-canvas page-hero-canvas" />
-        <div className="page-hero-glow guia-hero-glow" aria-hidden="true" />
+      <section className="page-hero guia-hero is-dither">
+        <DitherWave
+          className="dither-wave"
+          background="#080b0d"
+          color="#8c1f36"
+          accent="#f3a066"
+          pixelSize={3}
+          speed={0.85}
+          amplitude={1}
+          scale={1}
+        />
+        <div className="dither-veil" aria-hidden="true" />
+        <ParticleField density={40} parallax={10} className="particle-canvas page-hero-canvas" />
 
         <div className="page-hero-inner">
           <nav className="breadcrumb" aria-label="Ruta de navegación">
@@ -95,30 +106,17 @@ export default function GuiaPage({ navigate, path }: GuiaPageProps) {
             canales y videos que me sirvieron para ingresar.
           </p>
 
-          <button
-            className="scroll-cue"
-            onClick={() => {
-              document.getElementById("scroller")?.scrollIntoView({ behavior: "smooth" });
-            }}
-            aria-label="Bajar a la guía 3D"
-          >
-            <span>Bajar</span>
-            <i />
-          </button>
         </div>
 
-        <div className="page-hero-glare">
-          <div className="glare-card glare-card--portrait" style={{ perspective: "900px" }}>
-            <img className="glare-card-image" src="/images/uni-campus-courtyard.jpg" alt="" />
-            <span className="glare-card-shade" aria-hidden="true" />
-            <span className="glare-card-copy">
-              <small>Guía audiovisual</small>
-              <strong>Aprende de quienes saben</strong>
-              <em>Canales y videos seleccionados para estudiar con dirección.</em>
-              <span className="glare-card-action">Abrir la guía <Icon name="arrow" size={15} /></span>
-            </span>
-          </div>
-        </div>
+        <button
+          className="hero-scroll-cta"
+          onClick={() => {
+            document.getElementById("scroller")?.scrollIntoView({ behavior: "smooth" });
+          }}
+          aria-label="Bajar a la guía 3D"
+        >
+          Abrir la guía <Icon name="arrow" size={16} />
+        </button>
       </section>
 
       <section className="guia-scroll-section" id="scroller">
