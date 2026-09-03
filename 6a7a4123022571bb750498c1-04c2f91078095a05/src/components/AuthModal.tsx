@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Icon from "./Icon";
+import { SlideToUnlock } from "./ui/reward-card";
+import ConfettiBurst from "./ui/confetti-burst";
 import { useAuth } from "../hooks/useAuth";
 import { useUI, markJustRegistered, consumeJustRegistered } from "../lib/ui";
 import type { NavigateFn } from "../lib/router";
@@ -27,6 +29,33 @@ const DEMO_GOOGLE_ACCOUNTS = [
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+/** Regalo que se desbloquea al registrarse con Google. */
+const GIFT_URL = "https://linktr.ee/SuperAcademyUNI";
+
+function GiftIcon(props: React.SVGProps<SVGSVGElement>) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <rect x="3" y="8" width="18" height="4" rx="1" />
+      <path d="M12 12v8" />
+      <path d="M19 12v8H5v-8" />
+      <path d="M19 8a4 4 0 0 0-8 0" />
+      <path d="M5 8a4 4 0 0 1 8 0" />
+    </svg>
+  );
+}
+
 function GoogleGlyph() {
   return (
     <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
@@ -51,6 +80,7 @@ export default function AuthModal({ navigate }: AuthModalProps) {
   const [error, setError] = useState("");
   const [lastMethod, setLastMethod] = useState<"invitado" | "google">("invitado");
   const [autoSuccess, setAutoSuccess] = useState(false);
+  const [giftUnlocked, setGiftUnlocked] = useState(false);
   const checkedReturn = useRef(false);
 
   const visible = isAuthOpen || autoSuccess;
@@ -74,6 +104,7 @@ export default function AuthModal({ navigate }: AuthModalProps) {
       setOtherEmail("");
       setOtherName("");
       setBusy(false);
+      setGiftUnlocked(false);
       if (authStart === "google") {
         setStep("google");
       } else if (session && !needsProfile) {
@@ -330,6 +361,46 @@ export default function AuthModal({ navigate }: AuthModalProps) {
                 ? `Listo${session ? `, ${session.name.split(" ")[0]}` : ""}: tu cuenta de Google quedó vinculada a CachimboUNI.`
                 : `Listo, ${session?.name.split(" ")[0] ?? name.split(" ")[0]}: tu registro como invitado se completó correctamente.`}
             </p>
+
+            {lastMethod === "google" && (
+              <>
+                <ConfettiBurst fire={giftUnlocked} />
+                <SlideToUnlock
+                  className="reward-card is-auth"
+                  sliderText="Desliza para abrir tu regalo"
+                  onUnlock={() => setGiftUnlocked(true)}
+                  unlockedContent={
+                    <a
+                      className="reward-gift"
+                      href={GIFT_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span className="reward-gift-text">
+                        <strong>Super Academy UNI</strong>
+                        <small>Toca para reclamar tus recursos</small>
+                      </span>
+                      <span className="reward-gift-badge" aria-hidden="true">
+                        <Icon name="arrow" size={17} />
+                      </span>
+                    </a>
+                  }
+                >
+                  <div className="reward-head">
+                    <span className="reward-gift-ring" aria-hidden="true">
+                      <GiftIcon className="reward-gift-icon" />
+                    </span>
+                    <p className="auth-kicker is-mint">REGALO DE BIENVENIDA</p>
+                    <strong>Tienes un regalo desbloqueable</strong>
+                    <small>
+                      Por registrarte con Google te dejamos un pack de recursos para tu preparación
+                      UNI. Deslízalo para abrirlo.
+                    </small>
+                  </div>
+                </SlideToUnlock>
+              </>
+            )}
+
             <div className="auth-success-actions">
               <button
                 className="auth-submit"

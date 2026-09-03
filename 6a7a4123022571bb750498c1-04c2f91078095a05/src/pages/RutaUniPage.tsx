@@ -1,8 +1,8 @@
 import Icon from "../components/Icon";
 import ParticleField from "../components/ParticleField";
+import DitherWave from "../components/ui/dither-wave";
 import SiteHeader from "../components/SiteHeader";
 import SiteFooter from "../components/SiteFooter";
-import GlareCard from "../components/GlareCard";
 import type { NavigateFn } from "../lib/router";
 
 type RutaUniPageProps = {
@@ -47,9 +47,19 @@ export default function RutaUniPage({ navigate, path }: RutaUniPageProps) {
     <div className="page ruta-page">
       <SiteHeader navigate={navigate} path={path} variant="solid" />
 
-      <section className="page-hero ruta-hero">
-        <ParticleField density={56} parallax={12} className="particle-canvas page-hero-canvas" />
-        <div className="page-hero-glow ruta-hero-glow" aria-hidden="true" />
+      <section className="page-hero ruta-hero is-dither">
+        <DitherWave
+          className="dither-wave"
+          background="#080b0d"
+          color="#8c1f36"
+          accent="#f3a066"
+          pixelSize={3}
+          speed={0.85}
+          amplitude={1}
+          scale={1}
+        />
+        <div className="dither-veil" aria-hidden="true" />
+        <ParticleField density={40} parallax={12} className="particle-canvas page-hero-canvas" />
         <div className="page-hero-inner">
           <nav className="breadcrumb" aria-label="Ruta de navegación">
             <button onClick={() => navigate("/")} aria-label="Volver al inicio">
@@ -86,16 +96,12 @@ export default function RutaUniPage({ navigate, path }: RutaUniPageProps) {
             </div>
           </div>
         </div>
-        <div className="page-hero-glare">
-          <GlareCard
-            image="/images/uni-frontis.jpg"
-            eyebrow="Campus UNI"
-            title="Conoce tu futura casa"
-            description="Frontis, puertas y puntos clave antes de llegar al campus."
-            action="Ver el mapa"
-            onClick={() => document.querySelector(".map-section")?.scrollIntoView({ behavior: "smooth" })}
-          />
-        </div>
+        <button
+          className="hero-scroll-cta"
+          onClick={() => document.querySelector(".map-section")?.scrollIntoView({ behavior: "smooth" })}
+        >
+          Ver el mapa <Icon name="arrow" size={16} />
+        </button>
       </section>
 
       <section className="info-split section-pad">
